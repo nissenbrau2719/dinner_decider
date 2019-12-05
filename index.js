@@ -1,6 +1,7 @@
 let howExpensive = [];
-let foodTypesArray = [];
-let foodTypesQueryStr = "";
+let foodTypeQueryStr = "";
+let searchLocation = "";
+let searchRadius = "";
 
 
 const priceForm = 
@@ -57,12 +58,30 @@ function reset() {
 
 
 
+function getGeoLocation() {
+  console.log(searchLocation + searchRadius);
+  
+}
 
-
-
-
+function getSearchParams() {
+  $('form').on('click', '#js-findRestaurants', function(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    if($('#location').val() === "") {
+      alert("Please enter an address or location");
+    } else if($('#searchRadius').val() < 1 || $('#searchRadius').val() > 31 ) {
+      alert("Please enter a search radius between 1 and 31");
+    } else {
+      let locationArr = $('#location').val().split(" ");
+      searchLocation = locationArr.join("+");
+      searchRadius = $('#searchRadius').val() * 1609.344;
+      getGeoLocation();
+    }
+  });  
+}
 
 function getFoodTypes() {
+  let foodTypesArray = [];
   console.log('ran getFoodTypes');
   $("form").on("click", "#js-foodChoices", event => {
     event.stopPropagation();
@@ -70,9 +89,11 @@ function getFoodTypes() {
     $('input[name=foodChoice]:checked').map(function() {
       foodTypesArray.push($(this).val());
     });
-    console.log(foodTypesArray);
+    foodTypeQueryStr = foodTypesArray.join("+");
+    console.log(foodTypeQueryStr);
     $("form").empty();
     $("form").html(searchAreaForm);
+    getSearchParams();
   });
 }
 
