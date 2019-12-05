@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Dinner Decider</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+  <link rel="stylesheet" href="main.css">
+  <script src="https://kit.fontawesome.com/64efd63097.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <nav>
+    <div class="container">
+      <a class="home" href="https://nissenbrau2719.github.io/dinner_decider/" title="Home"><i class="fas fa-utensils"></i></a>
+    </div>
+  </nav>
+  <header>
+    <h1>Dinner Decider</h1>
+  </header>
+  <main>
+    <form>
+      <h2 class="opener">Trouble deciding on a place to eat with indecisive friends and family? Dinner Decider will figure it out for you!</h2>
+      <p>Enter your location, what types of food you'd be interested in, and a price range and play a quick game of restaurant roulette...</p> 
+      <button id="js-getStarted">Get Started</button>
+    </form>
+    <section id="js-results" class="hidden">
+      <div id="mapContainer">
+
+      </div>
+      <div id="restaurantDetails">
+
+      </div>
+      <button id="js-tryAgain">Give me another restaurant</button>
+      <a href="https://nissenbrau2719.github.io/dinner_decider/" title="Start Over"><button>Start Over</button></a>
+    </section>
+  </main>
+  <script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+  <script src="ak.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
