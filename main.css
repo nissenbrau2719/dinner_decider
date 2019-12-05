@@ -72,10 +72,10 @@ fieldset {
   text-align: center;
 }
 
-input {
+/* input {
   display: block;
   margin: 0 auto 10px auto;
-}
+} */
 
 #mapContainer {
   margin: 0 auto;
