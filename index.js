@@ -1,4 +1,5 @@
-let howExpensive = [];
+let minPrice = "";
+let maxPrice = "";
 let foodTypeQueryStr = "";
 let searchLocation = "";
 let searchRadius = "";
@@ -48,20 +49,34 @@ const searchAreaForm =
 </fieldset>`;
 
 function reset() {
-  howExpensive = [];
-  foodTypesArray = [];
+  minPrice = "";
+  maxPrice = "";
   foodTypesQueryStr = "";
+  searchLocation = "";
+  searchRadius = "";
 }
 
 
 
 
-
+function findRestaurants(latitude, longitude) {
+  console.log(`find restaurants ${searchRadius} m from ${latitude}, ${longitude}`);
+}
 
 function getGeoLocation() {
-  console.log(searchLocation + searchRadius);
-  
+  fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${gKey}`, )
+  .then(response => {
+    if(response.ok) {
+      return response.json()
+    }
+    throw new Error(response.statusText)
+    })
+  .then(responseJson => {
+    findRestaurants(responseJson.results[0].geometry.location.lat, responseJson.results[0].geometry.location.lng)
+  })
+  .catch(error => alert(`Something went wrong: ${error.message}`));
 }
+
 
 function getSearchParams() {
   $('form').on('click', '#js-findRestaurants', function(event) {
@@ -82,7 +97,6 @@ function getSearchParams() {
 
 function getFoodTypes() {
   let foodTypesArray = [];
-  console.log('ran getFoodTypes');
   $("form").on("click", "#js-foodChoices", event => {
     event.stopPropagation();
     event.preventDefault();
@@ -98,6 +112,7 @@ function getFoodTypes() {
 }
 
 function getPriceRange() {
+  let howExpensive = [];
   console.log('ran getPriceRange');
   $("form").on("click", "#js-setPrices", event => {
     event.stopPropagation();
@@ -105,7 +120,8 @@ function getPriceRange() {
     $('input[name=priceRange]:checked').map(function() {
       howExpensive.push($(this).val());
     });
-    console.log(howExpensive);
+    minPrice = Math.min(...howExpensive);
+    maxPrice = Math.max(...howExpensive);
     $("form").empty();
     $("form").html(foodForm);
     getFoodTypes();
