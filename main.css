@@ -72,11 +72,25 @@ fieldset {
   text-align: center;
 }
 
-/* input {
-  display: block;
-  margin: 0 auto 10px auto;
-} */
+input[type="checkbox"] {
+  margin-right: 10px;
+}
 
+ul {
+  max-width: 200px;
+  text-align: left;
+  margin: 20px auto;
+  padding: 10px;
+
+}
+
+li {
+  list-style: none;
+}
+
+label {
+  font-size: 1.25em;
+}
 #mapContainer {
   margin: 0 auto;
   position: relative;
@@ -124,6 +138,10 @@ iframe {
 
   input {
     margin: 0 auto 20px auto;
+  }
+
+  ul {
+    max-width: 250px;
   }
 }
 
