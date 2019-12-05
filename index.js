@@ -9,11 +9,10 @@ const priceForm =
 `<fieldset>
   <legend><h2>How expensive would you like your restaurant options to be?</h2></legend>
   <ul>
-    <li><input type="checkbox" name="priceRange" id="most_affordable" value="0"><label for="most_affordable">Most Affordable</label></li>
-    <li><input type="checkbox" name="priceRange" id="affordable" value="1"><label for="affordable">Affordable</label></li>
-    <li><input type="checkbox" name="priceRange" id="average" value="2"><label for="average">Average</label></li>
+    <li><input type="checkbox" name="priceRange" id="inexpensive" value="1"><label for="inexpensive">Inexpensive</label></li>
+    <li><input type="checkbox" name="priceRange" id="moderate" value="2"><label for="moderate">moderate</label></li>
     <li><input type="checkbox" name="priceRange" id="expensive" value="3"><label for="expensive">Slightly Expensive</label></li>
-    <li><input type="checkbox" name="priceRange" id="most_expensive" value="4"><label for="most_expensive">Most Expensive</label></li>
+    <li><input type="checkbox" name="priceRange" id="very_expensive" value="4"><label for="very_expensive">Very Expensive</label></li>
   </ul>
   <button type="submit" id="js-setPrices">Set Price Options</button>
 </fieldset>`;
@@ -57,10 +56,22 @@ function reset() {
 }
 
 
-
+function makeRestaurantList(responseJson) {
+  console.log(responseJson);
+}
 
 function findRestaurants(latitude, longitude) {
-  console.log(`find restaurants ${searchRadius} m from ${latitude}, ${longitude}`);
+  console.log(`finding restaurants with minPrice = ${minPrice} and maxPrice = ${maxPrice} in a radius of ${searchRadius} m from ${latitude}, ${longitude}`);
+  fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${foodTypeQueryStr}&location=${latitude},${longitude}&radius=${searchRadius}&strictBounds&opennow&minprice=${minPrice}&maxprice=${maxPrice}&key=${gKey}`)
+  .then(response => {
+    if(response.ok) {
+      return response.json()
+    }
+    throw new Error(response.statusText);
+  })
+  .then(responseJson => makeRestaurantList(responseJson))
+  .catch(error => alert(`Something went wrong: ${error.message}`));
+  
 }
 
 function getGeoLocation() {
@@ -135,6 +146,7 @@ function watchForm() {
     $('form').empty();
     $('form').html(priceForm);
     getPriceRange();
+    reset();
   });
 }
 
