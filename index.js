@@ -1,4 +1,6 @@
 let howExpensive = [];
+let foodTypesArray = [];
+let foodTypesQueryStr = "";
 
 
 const priceForm = 
@@ -34,7 +36,21 @@ const foodForm =
   <button type="submit" id="js-foodChoices">Find Restaurants</button>
 </fieldset>`;
 
+const searchAreaForm = 
+`<fieldset>
+  <legend><h2>Let's roll the dice on some restaurants in your area!</h2></legend>
+  <label for="location">Enter an address or location to search nearby:</label>
+  <input type="text" name="location" id="location" required>
+  <label for="searchRadius">How many miles are you willing to travel?:</label>
+  <input type="number" id="searchRadius" value="5" min="1" max="31" required>
+  <button type="submit" id="js-findRestaurants">Find Restaurants</button>
+</fieldset>`;
 
+function reset() {
+  howExpensive = [];
+  foodTypesArray = [];
+  foodTypesQueryStr = "";
+}
 
 
 
@@ -47,7 +63,17 @@ const foodForm =
 
 
 function getFoodTypes() {
- console.log('ran getFoodTypes');
+  console.log('ran getFoodTypes');
+  $("form").on("click", "#js-foodChoices", event => {
+    event.stopPropagation();
+    event.preventDefault();
+    $('input[name=foodChoice]:checked').map(function() {
+      foodTypesArray.push($(this).val());
+    });
+    console.log(foodTypesArray);
+    $("form").empty();
+    $("form").html(searchAreaForm);
+  });
 }
 
 function getPriceRange() {
@@ -64,8 +90,6 @@ function getPriceRange() {
     getFoodTypes();
   })
 }
-
-
 
 function watchForm() {
   $('#js-getStarted').click(event => {
