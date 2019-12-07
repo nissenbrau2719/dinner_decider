@@ -9,41 +9,58 @@ let map;
 const priceForm =
   `<fieldset>
   <legend><h2>How expensive would you like your restaurant options to be?</h2></legend>
-  <ul>
-    <li><input type="checkbox" name="priceRange" id="inexpensive" value="1"><label for="inexpensive">Inexpensive</label></li>
-    <li><input type="checkbox" name="priceRange" id="moderate" value="2"><label for="moderate">Moderate</label></li>
-    <li><input type="checkbox" name="priceRange" id="expensive" value="3"><label for="expensive">Slightly Expensive</label></li>
-    <li><input type="checkbox" name="priceRange" id="very_expensive" value="4"><label for="very_expensive">Very Expensive</label></li>
-  </ul>
+    <label for="min">Minimum price option</label>
+    <select id="min" name="min">
+      <option value="1">Inexpensive</option>
+      <option value="2">Moderate</option>
+      <option value="3">Slightly Expensive</option>
+      <option value="4">Very Expensive</option>
+    </select>
+    <label for="max">Maximum price option</label>
+    <select id="max" name="max">
+      <option value="1">Inexpensive</option>
+      <option value="2">Moderate</option>
+      <option value="3">Slightly Expensive</option>
+      <option value="4">Very Expensive</option>
+    </select> 
   <button type="submit" id="js-setPrices">Set Price Options</button>
 </fieldset>`;
 
 const foodForm =
   `<fieldset>
-  <legend><h2>Select what types of food sound good to you, or don't select any options if you're up for anything...</h2></legend>
-  <ul>
-    <li><input type="checkbox" name="foodChoice" id="barbecue" value="barbecue"><label for="barbecue">Barbecue</label></li> 
-    <li><input type="checkbox" name="foodChoice" id="pizza" value="pizza"><label for="pizza">Pizza</label></li> 
-    <li><input type="checkbox" name="foodChoice" id="sandwiches" value="sandwiches"><label for="sandwiches">Sandwiches</label></li> 
-    <li><input type="checkbox" name="foodChoice" id="burgers" value="burgers"><label for="burgers">Burgers</label></li> 
-    <li><input type="checkbox" name="foodChoice" id="chinese" value="chinese"><label for="chinese">Chinese</label></li> 
-    <li><input type="checkbox" name="foodChoice" id="mexican" value="mexican"><label for="mexican">Mexican</label></li> 
-    <li><input type="checkbox" name="foodChoice" id="italian" value="italian"><label for="italian">Italian</label></li> 
-    <li><input type="checkbox" name="foodChoice" id="sushi" value="sushi"><label for="sushi">Sushi</label></li> 
-    <li><input type="checkbox" name="foodChoice" id="thai" value="thai"><label for="thai">Thai</label></li> 
-    <li><input type="checkbox" name="foodChoice" id="indian" value="indian"><label for="indian">Indian</label></li> 
-    <li><input type="checkbox" name="foodChoice" id="vegan" value="vegan"><label for="vegan">Vegan</label></li> 
-  </ul>
+  <legend><h2>What type of food sounds the best?</h2></legend>
+  <select id="foodChoice" required>
+    <option value="">Surprise Me</option>
+    <option value="barbecue">Barbecue</option>
+    <option value="pizza">Pizza</option>
+    <option value="sandwiches">Sandwiches</option>
+    <option value="burgers">Burgers</option>
+    <option value="chinese">Chinese</option>
+    <option value="mexican">Mexican</option>
+    <option value="italian">Italian</option>
+    <option value="sushi">Sushi</option>
+    <option value="thai">Thai</option>
+    <option value="indian">Indian</option>
+    <option value="vegan">Vegan</option>
+    <option value="american">American</option>
+    <option value="soup">Soup</option>
+    <option value="fried+chicken">Fried Chicken</option>
+    <option value="pub">Pub</option>
+    <option value="salad">Salad</option>
+    <option value="korean">Korean</option>
+    <option value="tapas">Tapas</option>
+  </select>
   <button type="submit" id="js-foodChoices">Submit Food Options</button>
 </fieldset>`;
 
+
 const searchAreaForm =
   `<fieldset>
-  <legend><h2>Let's roll the dice on some restaurants in your area!</h2></legend>
-  <label for="location">Enter an address or location to search nearby:</label>
-  <input type="text" name="location" id="location" required>
-  <button type="submit" id="js-findRestaurants">Find Restaurants</button>
-</fieldset>`;
+    <legend><h2>Let's roll the dice on some restaurants in your area!</h2></legend>
+    <label for="location">Enter an address or location to search nearby:</label>
+    <input type="text" name="location" id="location" required>
+    <button type="submit" id="js-findRestaurants">Find Restaurants</button>
+  </fieldset>`;
 
 const restaurantDetails = 
   `<h2>How about eating at:</h2>
@@ -64,12 +81,6 @@ function reset() {
   $('#restaurantDetails').empty();
 }
 
-function initMap() {
-  map = new google.maps.Map($('#map'), {
-    center: {lat: selectedRestaurant.geometry.location.lat, lng: selectedRestaurant.geometry.location.lng},
-    zoom: 8
-  });
-}
 
 function displayResults() {
   console.log(restaurantList)
@@ -85,7 +96,7 @@ function displayResults() {
   $('#js-results').removeClass('hidden');
   $('#js-tryAgain').click(function() {
     displayResults();
-    initMap();
+    // initMap();
   });
 }
 
@@ -139,14 +150,15 @@ function getSearchParams() {
 }
 
 function getFoodTypes() {
-  let foodTypesArray = [];
+  // let foodTypesArray = [];
   $("form").on("click", "#js-foodChoices", event => {
     event.stopPropagation();
     event.preventDefault();
-    $('input[name=foodChoice]:checked').map(function () {
-      foodTypesArray.push($(this).val());
-    });
-    foodTypeQueryStr = foodTypesArray.join("+");
+    // $('#foodChoice option:selected').map(function () {
+    //   foodTypesArray.push($(this).val());
+    // });
+    // foodTypeQueryStr = foodTypesArray.join("+");
+    foodTypeQueryStr = $('#foodChoice').val();
     console.log(foodTypeQueryStr);
     $("form").empty();
     $("form").html(searchAreaForm);
@@ -160,20 +172,25 @@ function getPriceRange() {
   $("form").on("click", "#js-setPrices", event => {
     event.stopPropagation();
     event.preventDefault();
-
-    $('input[name=priceRange]:checked').map(function () {
-      howExpensive.push($(this).val());
-    });
-    if (howExpensive.length === 0) {
-      alert('Please select one or more options to establish a price range');
+    // $('input[name=priceRange]:checked').map(function () {
+    //   howExpensive.push($(this).val());
+    // });
+    // if (howExpensive.length === 0) {
+    //   alert('Please select one or more options to establish a price range');
+    // } else {
+    //   minPrice = Math.min(...howExpensive);
+    //   maxPrice = Math.max(...howExpensive);
+    if($('#min').val() > $('#max').val()){
+      $('#errorMessage').text('Please make sure your minimum price option is less than or equal to your maximum price option');
     } else {
-      minPrice = Math.min(...howExpensive);
-      maxPrice = Math.max(...howExpensive);
+      minPrice = $('#min').val();
+      maxPrice = $('#max').val();
+      $("#errorMessage").empty();
       $("form").empty();
       $("form").html(foodForm);
       getFoodTypes();
     }
-  })
+  })    
 }
 
 function watchForm() {
