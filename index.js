@@ -5,10 +5,10 @@ let searchLocation = "";
 let restaurantList = [];
 let selectedRestaurant = {};
 let map;
-let myLat = "";
-let myLng = "";
-let selectedLat = "";
-let selectedLng = "";
+let myLat;
+let myLng;
+let selectedLat;
+let selectedLng;
 
 const priceForm =
   `<fieldset>
@@ -89,13 +89,19 @@ function reset() {
   $('#restaurantDetails').empty();
 }
 
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: selectedLat, lng: selectedLng},
+    zoom: 8
+  });
+}
 
 function displayResults() {
   // console.log(restaurantList)
   selectedRestaurant = restaurantList[Math.floor(Math.random() * restaurantList.length)];
   // console.log(selectedRestaurant);
-  selectedLat = selectedRestaurant.geometry.location.lat;
-  selectedLng = selectedRestaurant.geometry.location.lng;
+  selectedLat = parseFloat(selectedRestaurant.geometry.location.lat);
+  selectedLng = parseFloat(selectedRestaurant.geometry.location.lng);
   console.log(selectedLat + ", " + selectedLng);
   $('form').addClass('hidden');
   $('#restaurantDetails').html(
@@ -103,11 +109,13 @@ function displayResults() {
     <p>${selectedRestaurant.formatted_address}</p>
     <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.user_ratings_total} Google users</p>`
   );
+  // initMap();
   $('h1').text("How about eating at:")
   $('#js-results').removeClass('hidden');
   $('#js-tryAgain').click(function() {
     displayResults();
     // initMap();
+
   });
 }
 
@@ -118,10 +126,10 @@ function makeRestaurantList(responseJson) {
 }
 
 function findRestaurants(latitude, longitude) {
-  myLat = latitude;
-  myLng = longitude;
+  myLat = parseFloat(latitude);
+  myLng = parseFloat(longitude);
   console.log(`finding restaurants with minPrice = ${minPrice} and maxPrice = ${maxPrice} near ${latitude}, ${longitude}`);
-  fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${foodTypeQueryStr}&type=restaurant&location=${latitude},${longitude}&radius=5000&strictBounds&opennow=true&minprice=${minPrice}&maxprice=${maxPrice}&key=${gKey}`)
+  fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${foodTypeQueryStr}&type=restaurant&location=${latitude},${longitude}&radius=5000&strictBounds&opennow=true&minprice=${minPrice}&maxprice=${maxPrice}&key=AIzaSyDih_wY1ywQgLfKrTsHtA9LoehILL3ign0`)
     .then(response => {
       if (response.ok) {
         return response.json()
@@ -134,7 +142,7 @@ function findRestaurants(latitude, longitude) {
 }
 
 function getGeoLocation() {
-  fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${gKey}`)
+  fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=AIzaSyDih_wY1ywQgLfKrTsHtA9LoehILL3ign0`)
     .then(response => {
       if (response.ok) {
         return response.json()
