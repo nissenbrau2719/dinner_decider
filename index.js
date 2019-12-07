@@ -3,8 +3,12 @@ let maxPrice = "";
 let foodTypeQueryStr = "";
 let searchLocation = "";
 let restaurantList = [];
-let selectedRestaurant = "";
+let selectedRestaurant = {};
 let map;
+let myLat = "";
+let myLng = "";
+let selectedLat = "";
+let selectedLng = "";
 
 const priceForm =
   `<fieldset>
@@ -74,7 +78,11 @@ function reset() {
   foodTypesQueryStr = "";
   searchLocation = "";
   restaurantList = [];
-  selectedRestaurant = "";
+  selectedRestaurant = {};
+  myLat = "";
+  myLng = "";
+  selectedLat = "";
+  selectedLng = "";
   $('h1').text("Dinner Decider");
   $('form').removeClass('hidden');
   $('#js-results').addClass('hidden');
@@ -83,9 +91,12 @@ function reset() {
 
 
 function displayResults() {
-  console.log(restaurantList)
+  // console.log(restaurantList)
   selectedRestaurant = restaurantList[Math.floor(Math.random() * restaurantList.length)];
-  console.log(selectedRestaurant);
+  // console.log(selectedRestaurant);
+  selectedLat = selectedRestaurant.geometry.location.lat;
+  selectedLng = selectedRestaurant.geometry.location.lng;
+  console.log(selectedLat + ", " + selectedLng);
   $('form').addClass('hidden');
   $('#restaurantDetails').html(
     `<h2>${selectedRestaurant.name}</h2>
@@ -101,12 +112,14 @@ function displayResults() {
 }
 
 function makeRestaurantList(responseJson) {
-  console.log(responseJson);
+  // console.log(responseJson);
   restaurantList = responseJson.results;
   displayResults();
 }
 
 function findRestaurants(latitude, longitude) {
+  myLat = latitude;
+  myLng = longitude;
   console.log(`finding restaurants with minPrice = ${minPrice} and maxPrice = ${maxPrice} near ${latitude}, ${longitude}`);
   fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${foodTypeQueryStr}&type=restaurant&location=${latitude},${longitude}&radius=5000&strictBounds&opennow=true&minprice=${minPrice}&maxprice=${maxPrice}&key=${gKey}`)
     .then(response => {
@@ -168,18 +181,10 @@ function getFoodTypes() {
 
 function getPriceRange() {
   let howExpensive = [];
-  console.log('ran getPriceRange');
+  // console.log('ran getPriceRange');
   $("form").on("click", "#js-setPrices", event => {
     event.stopPropagation();
     event.preventDefault();
-    // $('input[name=priceRange]:checked').map(function () {
-    //   howExpensive.push($(this).val());
-    // });
-    // if (howExpensive.length === 0) {
-    //   alert('Please select one or more options to establish a price range');
-    // } else {
-    //   minPrice = Math.min(...howExpensive);
-    //   maxPrice = Math.max(...howExpensive);
     if($('#min').val() > $('#max').val()){
       $('#errorMessage').text('Please make sure your minimum price option is less than or equal to your maximum price option');
     } else {
