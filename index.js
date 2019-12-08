@@ -129,7 +129,7 @@ function findRestaurants(latitude, longitude) {
   myLat = parseFloat(latitude);
   myLng = parseFloat(longitude);
   console.log(`finding restaurants with minPrice = ${minPrice} and maxPrice = ${maxPrice} near ${latitude}, ${longitude}`);
-  fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${foodTypeQueryStr}&type=restaurant&location=${latitude},${longitude}&radius=5000&strictBounds&opennow=true&minprice=${minPrice}&maxprice=${maxPrice}&key=AIzaSyDih_wY1ywQgLfKrTsHtA9LoehILL3ign0`)
+  fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${foodTypeQueryStr}&type=restaurant&location=${latitude},${longitude}&radius=5000&strictBounds&opennow=true&minprice=${minPrice}&maxprice=${maxPrice}&key=AIzaSyD_gl3mjZQODG6SNjp_0JNJ26-RA5nvdW0`)
     .then(response => {
       if (response.ok) {
         return response.json()
@@ -142,7 +142,7 @@ function findRestaurants(latitude, longitude) {
 }
 
 function getGeoLocation() {
-  fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=AIzaSyDih_wY1ywQgLfKrTsHtA9LoehILL3ign0`)
+  fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=AIzaSyD_gl3mjZQODG6SNjp_0JNJ26-RA5nvdW0`)
     .then(response => {
       if (response.ok) {
         return response.json()
