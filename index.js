@@ -1,5 +1,4 @@
-let minPrice = "";
-let maxPrice = "";
+let priceStr = "";
 let foodTypeQueryStr = "";
 let searchLocation = "";
 let restaurantList = [];
@@ -13,22 +12,14 @@ let selectedLng;
 const priceForm =
   `<fieldset>
   <legend><h2>How expensive would you like your restaurant options to be?</h2></legend>
-    <label for="min">Minimum price option</label>
-    <select id="min" name="min">
-      <option value="1">Inexpensive</option>
-      <option value="2">Moderate</option>
-      <option value="3">Slightly Expensive</option>
-      <option value="4">Very Expensive</option>
-    </select>
-    <label for="max">Maximum price option</label>
-    <select id="max" name="max">
-      <option value="1">Inexpensive</option>
-      <option value="2">Moderate</option>
-      <option value="3">Slightly Expensive</option>
-      <option value="4">Very Expensive</option>
-    </select> 
+  <ul>
+    <li><input type="checkbox" name="priceRange" id="inexpensive" value="1"><label for="inexpensive">Inexpensive</label></li>
+    <li><input type="checkbox" name="priceRange" id="moderate" value="2"><label for="moderate">Moderate</label></li>
+    <li><input type="checkbox" name="priceRange" id="expensive" value="3"><label for="expensive">Slightly Expensive</label></li>
+    <li><input type="checkbox" name="priceRange" id="very_expensive" value="4"><label for="very_expensive">Very Expensive</label></li>
+  </ul>
   <button type="submit" id="js-setPrices">Set Price Options</button>
-</fieldset>`;
+  </fieldset>`;
 
 const foodForm =
   `<fieldset>
@@ -73,8 +64,7 @@ const restaurantDetails =
   <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.user_ratings_total} Google users</p>`;
 
 function reset() {
-  minPrice = "";
-  maxPrice = "";
+  priceStr = "";
   foodTypesQueryStr = "";
   searchLocation = "";
   restaurantList = [];
@@ -134,7 +124,7 @@ function findRestaurants() {
     })
   }
   let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?q=${foodTypeQueryStr}&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=5000&categories=restaurants`
-  console.log(`finding restaurants with minPrice = ${minPrice} and maxPrice = ${maxPrice} near ${myLat}, ${myLng}`);
+  console.log(`finding restaurants with price options (${priceStr}) near ${myLat}, ${myLng}`);
   fetch(url, options)
     .then(response => {
       if (response.ok) {
@@ -167,14 +157,17 @@ function getFoodTypes() {
 }
 
 function getPriceRange() {
+  let howExpensive = [];
   $("form").on("click", "#js-setPrices", event => {
     event.stopPropagation();
     event.preventDefault();
-    if($('#min').val() > $('#max').val()){
-      $('#errorMessage').text('Please make sure your minimum price option is less than or equal to your maximum price option');
+    $('input[name=priceRange]:checked').map(function () {
+      howExpensive.push($(this).val());
+    });
+    if (howExpensive.length === 0) {
+      $("#errorMessage").text('Please select one or more options to establish a price range');
     } else {
-      minPrice = $('#min').val();
-      maxPrice = $('#max').val();
+      priceStr = howExpensive.join(",");
       $("#errorMessage").empty();
       $("form").empty();
       $("form").html(foodForm);
@@ -197,7 +190,6 @@ function getGeoLocation() {
       myLng = responseJson.results[0].geometry.location.lng;
       console.log(myLat);
       console.log(myLng);
-      // findRestaurants(responseJson.results[0].geometry.location.lat, responseJson.results[0].geometry.location.lng)
       $("form").empty();
       $("form").html(priceForm);
       getPriceRange();
