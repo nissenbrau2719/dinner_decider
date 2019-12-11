@@ -15,7 +15,7 @@ const priceForm =
   <ul>
     <li><input type="checkbox" name="priceRange" id="inexpensive" value="1"><label for="inexpensive">Inexpensive</label></li>
     <li><input type="checkbox" name="priceRange" id="moderate" value="2"><label for="moderate">Moderate</label></li>
-    <li><input type="checkbox" name="priceRange" id="expensive" value="3"><label for="expensive">Slightly Expensive</label></li>
+    <li><input type="checkbox" name="priceRange" id="expensive" value="3"><label for="expensive">Expensive</label></li>
     <li><input type="checkbox" name="priceRange" id="very_expensive" value="4"><label for="very_expensive">Very Expensive</label></li>
   </ul>
   <button type="submit" id="js-setPrices">Set Price Options</button>
@@ -24,26 +24,47 @@ const priceForm =
 const foodForm =
   `<fieldset>
   <legend><h2>What type of food sounds the best?</h2></legend>
-  <select id="foodChoice" required>
-    <option value="">Surprise Me</option>
-    <option value="barbecue">Barbecue</option>
+  <p>(Hold ctrl/control key to select multiple)</p>
+  <select id="foodChoice" multiple required>
+    <option value="restaurants">Surprise Me</option>
+    <option value="delis">Deli</option>
+    <option value="bbq">Barbecue</option>
+    <option value="breakfast_brunch">Breakfast & Brunch</option>
     <option value="pizza">Pizza</option>
+    <option value="buffets">Buffet</option>
     <option value="sandwiches">Sandwiches</option>
+    <option value="diners">Diner</option>
+    <option value="ethiopian">Ethiopian</option>
+    <option value="steak">Steakhouse</option>
+    <option value="french">French</option>
     <option value="burgers">Burgers</option>
+    <option value="noodles">Noodles</option>
     <option value="chinese">Chinese</option>
+    <option value="cafes">Cafe</option>
     <option value="mexican">Mexican</option>
     <option value="italian">Italian</option>
+    <option value="mideastern">Middle Eastern</option>
+    <option value="soulfood">Soul Food</option>
+    <option value="eastern_european">Eastern European</option>
     <option value="sushi">Sushi</option>
     <option value="thai">Thai</option>
-    <option value="indian">Indian</option>
+    <option value="cajun">Cajun/Creole</option>
+    <option value="indpak">Indian</option>
+    <option value="seafood">Seafood</option>
+    <option value="kebab">Kebabs</option>
     <option value="vegan">Vegan</option>
-    <option value="american">American</option>
+    <option value="vegetarian">Vegetarian</option>
+    <option value="caribbean">Caribbean</option>
+    <option value="tradamerican">American</option>
     <option value="soup">Soup</option>
-    <option value="fried+chicken">Fried Chicken</option>
-    <option value="pub">Pub</option>
+    <option value="comfort_food">Comfort Food</option>
+    <option value="pubfood">Pub Food</option>
+    <option value="vietnamese">Vietnamese</option>
+    <option value="soup">Soup</option>
     <option value="salad">Salad</option>
     <option value="korean">Korean</option>
-    <option value="tapas">Tapas</option>
+    <option value="tapasmallplates">Tapas/Small Plates</option>
+    <option value="wraps">Wraps</option>
   </select>
   <button type="submit" id="js-foodChoices">Submit Food Options</button>
 </fieldset>`;
@@ -123,8 +144,8 @@ function findRestaurants() {
       Authorization: "Bearer fp5JUQ_Jg-Ll55NX9SzinZpoxO4xOh4xBLAG48ABeNpwM9Qw843vgx4jNHnviA0z3beWMWOMFfTAdKBeN40-i1H4NUvM2540Vn8r_j7yg8qrC9Ln7nvYAISzbxTsXXYx"
     })
   }
-  let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?q=${foodTypeQueryStr}&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=5000&categories=restaurants`
-  console.log(`finding restaurants with price options (${priceStr}) near ${myLat}, ${myLng}`);
+  let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?price=${priceStr}&limit=50&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=5000&categories=${foodTypeQueryStr}`
+  console.log(`finding ${foodTypeQueryStr} restaurants with price options (${priceStr}) near ${myLat}, ${myLng}`);
   fetch(url, options)
     .then(response => {
       if (response.ok) {
@@ -140,14 +161,14 @@ function findRestaurants() {
 
 
 function getFoodTypes() {
-  // let foodTypesArray = [];
+  let foodTypesArray = [];
   $("form").on("click", "#js-foodChoices", event => {
     event.stopPropagation();
     event.preventDefault();
     // $('#foodChoice option:selected').map(function () {
     //   foodTypesArray.push($(this).val());
     // });
-    // foodTypeQueryStr = foodTypesArray.join("+");
+    // foodTypeQueryStr = foodTypesArray.join(",");
     foodTypeQueryStr = $('#foodChoice').val();
     console.log(foodTypeQueryStr);
     // $("form").empty();
