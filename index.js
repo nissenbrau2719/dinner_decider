@@ -23,10 +23,11 @@ const priceForm =
 
 const foodForm =
   `<fieldset>
-  <legend><h2>What type of food sounds the best?</h2></legend>
-  <p>(Hold ctrl/control key to select multiple)</p>
+  <legend><h2>What types of food are you interested in right now?</h2></legend>
+  <p>Choose 10 or fewer categories for best results</p>
   <select id="foodChoice" multiple required>
     <option value="restaurants">Surprise Me</option>
+    <option value="hotdogs">Fast Food</option>
     <option value="delis">Deli</option>
     <option value="bbq">Barbecue</option>
     <option value="breakfast_brunch">Breakfast & Brunch</option>
@@ -55,7 +56,7 @@ const foodForm =
     <option value="vegan">Vegan</option>
     <option value="vegetarian">Vegetarian</option>
     <option value="caribbean">Caribbean</option>
-    <option value="tradamerican">American</option>
+    <option value="tradamerican">American (Traditional)</option>
     <option value="soup">Soup</option>
     <option value="comfort_food">Comfort Food</option>
     <option value="pubfood">Pub Food</option>
@@ -79,10 +80,12 @@ const searchAreaForm =
   </fieldset>`;
 
 const restaurantDetails = 
-  `<h2>How about eating at:</h2>
-  <h3>${selectedRestaurant.name}</h3>
-  <p>${selectedRestaurant.formatted_address}</p>
-  <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.user_ratings_total} Google users</p>`;
+`<h2>${selectedRestaurant.name}</h2>
+<address>${displayAddress}</address>
+<p>Phone: ${selectedRestaurant.phone}</p>
+<p>Price Level: ${selectedRestaurant.price}</p>
+<p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.review_count} Yelp users</p>
+<a target="_blank" href="${selectedRestaurant.url}">Check out this restaurant's Yelp page</a>`;
 
 function reset() {
   priceStr = "";
@@ -100,40 +103,44 @@ function reset() {
   $('#restaurantDetails').empty();
 }
 
-function initMap() {
-  map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: selectedLat, lng: selectedLng},
-    zoom: 8
-  });
-}
-
 function displayResults() {
-  // console.log(restaurantList)
   selectedRestaurant = restaurantList[Math.floor(Math.random() * restaurantList.length)];
-  // console.log(selectedRestaurant);
-  selectedLat = parseFloat(selectedRestaurant.geometry.location.lat);
-  selectedLng = parseFloat(selectedRestaurant.geometry.location.lng);
-  console.log(selectedLat + ", " + selectedLng);
+  console.log(selectedRestaurant);
+  selectedLat = selectedRestaurant.coordinates.latitude;
+  selectedLng = selectedRestaurant.coordinates.longitude;
+  let displayAddress = selectedRestaurant.location.display_address.join("<br>");
   $('form').addClass('hidden');
   $('#restaurantDetails').html(
     `<h2>${selectedRestaurant.name}</h2>
-    <p>${selectedRestaurant.formatted_address}</p>
-    <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.user_ratings_total} Google users</p>`
-  );
-  // initMap();
+    <address>${displayAddress}</address>
+    <p>Phone: ${selectedRestaurant.phone}</p>
+    <p>Price Level: ${selectedRestaurant.price}</p>
+    <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.review_count} Yelp users</p>
+    <a target="_blank" href="${selectedRestaurant.url}">Check out this restaurant's Yelp page</a>`
+  ); 
   $('h1').text("How about eating at:")
   $('#js-results').removeClass('hidden');
-  $('#js-tryAgain').click(function() {
+  $('#js-reroll').click(function() {
     displayResults();
-    // initMap();
-
   });
 }
 
+function displayNoResults() {
+  $('form').addClass('hidden');
+  $('#js-reroll').addClass('hidden');
+  $('h1').text("Sorry, we found no restaurants that fit your search criteria");
+  $('#restaurantDetails').append("<h2>Would you like to restart?</h2>");
+  $('#js-results').removeClass('hidden');
+}
+
 function makeRestaurantList(responseJson) {
-  // console.log(responseJson);
-  restaurantList = responseJson.results;
-  displayResults();
+  $("#errorMessage").empty();
+  if(responseJson.businesses.length === 0) {
+    displayNoResults();
+  } else {
+    restaurantList = responseJson.businesses;
+    displayResults();
+  }
 }
 
 
@@ -153,26 +160,17 @@ function findRestaurants() {
       }
       throw new Error(response.statusText);
     })
-    .then(responseJson => console.log(responseJson))
-    // .then(responseJson => makeRestaurantList(responseJson))
-    .catch(error => alert(`Something went wrong: ${error.message}`));
-
+    .then(responseJson => makeRestaurantList(responseJson))
+    .catch(error => $('#errorMessage').text(`Something went wrong: ${error.message}`));
 }
 
 
 function getFoodTypes() {
-  let foodTypesArray = [];
   $("form").on("click", "#js-foodChoices", event => {
     event.stopPropagation();
     event.preventDefault();
-    // $('#foodChoice option:selected').map(function () {
-    //   foodTypesArray.push($(this).val());
-    // });
-    // foodTypeQueryStr = foodTypesArray.join(",");
     foodTypeQueryStr = $('#foodChoice').val();
     console.log(foodTypeQueryStr);
-    // $("form").empty();
-    // $("form").html(searchAreaForm);
     findRestaurants();
   });
 }
@@ -186,7 +184,7 @@ function getPriceRange() {
       howExpensive.push($(this).val());
     });
     if (howExpensive.length === 0) {
-      $("#errorMessage").text('Please select one or more options to establish a price range');
+      $("#errorMessage").text('Please select one or more price options');
     } else {
       priceStr = howExpensive.join(",");
       $("#errorMessage").empty();
@@ -206,16 +204,14 @@ function getGeoLocation() {
       throw new Error(response.statusText)
     })
     .then(responseJson => {
-      console.log(responseJson)
       myLat = responseJson.results[0].geometry.location.lat;
       myLng = responseJson.results[0].geometry.location.lng;
-      console.log(myLat);
-      console.log(myLng);
       $("form").empty();
       $("form").html(priceForm);
       getPriceRange();
+      $("#errorMessage").empty();
     })
-    .catch(error => alert(`Something went wrong: ${error.message}`));
+    .catch(error => $("#errorMessage").text(`Something went wrong: ${error.message}`));
   }    
 
 function getSearchParams() {
@@ -223,10 +219,11 @@ function getSearchParams() {
     event.stopPropagation();
     event.preventDefault();
     if ($('#location').val() === "") {
-      alert("Please enter an address or location");
+      $("#errorMessage").text("Please enter an address or location");
     } else {
       let locationArr = $('#location').val().split(" ");
       searchLocation = locationArr.join("+");
+      $("#errorMessage").empty();
       getGeoLocation();
     }
   });
