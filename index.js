@@ -70,7 +70,7 @@ const restaurantDetails =
   `<h2>How about eating at:</h2>
   <h3>${selectedRestaurant.name}</h3>
   <p>${selectedRestaurant.formatted_address}</p>
-  <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.user_ratings_total} Google users</p>`
+  <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.user_ratings_total} Google users</p>`;
 
 function reset() {
   minPrice = "";
@@ -125,50 +125,29 @@ function makeRestaurantList(responseJson) {
   displayResults();
 }
 
-function findRestaurants(latitude, longitude) {
-  myLat = parseFloat(latitude);
-  myLng = parseFloat(longitude);
-  console.log(`finding restaurants with minPrice = ${minPrice} and maxPrice = ${maxPrice} near ${latitude}, ${longitude}`);
-  fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${foodTypeQueryStr}&type=restaurant&location=${latitude},${longitude}&radius=5000&strictBounds&opennow=true&minprice=${minPrice}&maxprice=${maxPrice}&key=AIzaSyAXNQdYbdFDBIn-VOTayp_jWh2M0x7Zlj4`)
+
+
+function findRestaurants() {
+  let options = {
+    headers: new Headers ({
+      Authorization: "Bearer fp5JUQ_Jg-Ll55NX9SzinZpoxO4xOh4xBLAG48ABeNpwM9Qw843vgx4jNHnviA0z3beWMWOMFfTAdKBeN40-i1H4NUvM2540Vn8r_j7yg8qrC9Ln7nvYAISzbxTsXXYx"
+    })
+  }
+  let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?q=${foodTypeQueryStr}&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=5000&categories=restaurants`
+  console.log(`finding restaurants with minPrice = ${minPrice} and maxPrice = ${maxPrice} near ${myLat}, ${myLng}`);
+  fetch(url, options)
     .then(response => {
       if (response.ok) {
         return response.json()
       }
       throw new Error(response.statusText);
     })
-    .then(responseJson => makeRestaurantList(responseJson))
+    .then(responseJson => console.log(responseJson))
+    // .then(responseJson => makeRestaurantList(responseJson))
     .catch(error => alert(`Something went wrong: ${error.message}`));
 
 }
 
-function getGeoLocation() {
-  fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=AIzaSyAXNQdYbdFDBIn-VOTayp_jWh2M0x7Zlj4`)
-    .then(response => {
-      if (response.ok) {
-        return response.json()
-      }
-      throw new Error(response.statusText)
-    })
-    .then(responseJson => {
-      findRestaurants(responseJson.results[0].geometry.location.lat, responseJson.results[0].geometry.location.lng)
-    })
-    .catch(error => alert(`Something went wrong: ${error.message}`));
-}
-
-
-function getSearchParams() {
-  $('form').on('click', '#js-findRestaurants', function (event) {
-    event.stopPropagation();
-    event.preventDefault();
-    if ($('#location').val() === "") {
-      alert("Please enter an address or location");
-    } else {
-      let locationArr = $('#location').val().split(" ");
-      searchLocation = locationArr.join("+");
-      getGeoLocation();
-    }
-  });
-}
 
 function getFoodTypes() {
   // let foodTypesArray = [];
@@ -181,15 +160,13 @@ function getFoodTypes() {
     // foodTypeQueryStr = foodTypesArray.join("+");
     foodTypeQueryStr = $('#foodChoice').val();
     console.log(foodTypeQueryStr);
-    $("form").empty();
-    $("form").html(searchAreaForm);
-    getSearchParams();
+    // $("form").empty();
+    // $("form").html(searchAreaForm);
+    findRestaurants();
   });
 }
 
 function getPriceRange() {
-  let howExpensive = [];
-  // console.log('ran getPriceRange');
   $("form").on("click", "#js-setPrices", event => {
     event.stopPropagation();
     event.preventDefault();
@@ -206,14 +183,50 @@ function getPriceRange() {
   })    
 }
 
+function getGeoLocation() {
+  fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=AIzaSyBaN2hqtLbLkXCLBsIJByMMEHoH9I_86lI`)
+    .then(response => {
+      if (response.ok) {
+        return response.json()
+      }
+      throw new Error(response.statusText)
+    })
+    .then(responseJson => {
+      console.log(responseJson)
+      myLat = responseJson.results[0].geometry.location.lat;
+      myLng = responseJson.results[0].geometry.location.lng;
+      console.log(myLat);
+      console.log(myLng);
+      // findRestaurants(responseJson.results[0].geometry.location.lat, responseJson.results[0].geometry.location.lng)
+      $("form").empty();
+      $("form").html(priceForm);
+      getPriceRange();
+    })
+    .catch(error => alert(`Something went wrong: ${error.message}`));
+  }    
+
+function getSearchParams() {
+  $('form').on('click', '#js-findRestaurants', function (event) {
+    event.stopPropagation();
+    event.preventDefault();
+    if ($('#location').val() === "") {
+      alert("Please enter an address or location");
+    } else {
+      let locationArr = $('#location').val().split(" ");
+      searchLocation = locationArr.join("+");
+      getGeoLocation();
+    }
+  });
+}
+
 function watchForm() {
   $('#js-getStarted').click(event => {
     event.stopPropagation();
     event.preventDefault();
     reset();
     $('form').empty();
-    $('form').html(priceForm);
-    getPriceRange();
+    $('form').html(searchAreaForm);
+    getSearchParams();
   });
 }
 
