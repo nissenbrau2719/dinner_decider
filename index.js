@@ -193,7 +193,7 @@ function getPriceRange() {
 }
 
 function getGeoLocation() {
-  fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=AIzaSyBaN2hqtLbLkXCLBsIJByMMEHoH9I_86lI`)
+  fetch(`https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=AIzaSyBaN2hqtLbLkXCLBsIJByMMEHoH9I_86lI`)
     .then(response => {
       if (response.ok) {
         return response.json()
