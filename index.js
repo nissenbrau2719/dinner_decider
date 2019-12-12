@@ -100,7 +100,7 @@ const searchAreaForm =
 
 function displayResults() {
   selectedRestaurant = restaurantList[Math.floor(Math.random() * restaurantList.length)];
-  console.log(selectedRestaurant);
+  // console.log(selectedRestaurant);
   selectedLat = selectedRestaurant.coordinates.latitude;
   selectedLng = selectedRestaurant.coordinates.longitude;
   displayAddress = selectedRestaurant.location.display_address.join("<br>");
@@ -230,7 +230,7 @@ function watchForm() {
   $('#js-getStarted').click(event => {
     event.stopPropagation();
     event.preventDefault();
-    reset();
+    // reset();
     $('form').empty();
     $('form').html(searchAreaForm);
     getSearchParams();
