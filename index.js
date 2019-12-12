@@ -1,5 +1,5 @@
 let priceStr = "";
-let foodTypeQueryStr = "";
+let selectedFoodTypes = "";
 let searchLocation = "";
 let restaurantList = [];
 let selectedRestaurant = {};
@@ -8,6 +8,7 @@ let myLat;
 let myLng;
 let selectedLat;
 let selectedLng;
+let displayAddress;
 
 const priceForm =
   `<fieldset>
@@ -108,7 +109,7 @@ function displayResults() {
   console.log(selectedRestaurant);
   selectedLat = selectedRestaurant.coordinates.latitude;
   selectedLng = selectedRestaurant.coordinates.longitude;
-  let displayAddress = selectedRestaurant.location.display_address.join("<br>");
+  displayAddress = selectedRestaurant.location.display_address.join("<br>");
   $('form').addClass('hidden');
   $('#restaurantDetails').html(
     `<h2>${selectedRestaurant.name}</h2>
@@ -143,16 +144,14 @@ function makeRestaurantList(responseJson) {
   }
 }
 
-
-
 function findRestaurants() {
   let options = {
     headers: new Headers ({
       Authorization: "Bearer fp5JUQ_Jg-Ll55NX9SzinZpoxO4xOh4xBLAG48ABeNpwM9Qw843vgx4jNHnviA0z3beWMWOMFfTAdKBeN40-i1H4NUvM2540Vn8r_j7yg8qrC9Ln7nvYAISzbxTsXXYx"
     })
   }
-  let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?price=${priceStr}&limit=50&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=5000&categories=${foodTypeQueryStr}`
-  console.log(`finding ${foodTypeQueryStr} restaurants with price options (${priceStr}) near ${myLat}, ${myLng}`);
+  let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?price=${priceStr}&limit=50&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=5000&categories=${selectedFoodTypes}`
+  console.log(`finding ${selectedFoodTypes} restaurants with price options (${priceStr}) near ${myLat}, ${myLng}`);
   fetch(url, options)
     .then(response => {
       if (response.ok) {
@@ -164,14 +163,18 @@ function findRestaurants() {
     .catch(error => $('#errorMessage').text(`Something went wrong: ${error.message}`));
 }
 
-
 function getFoodTypes() {
   $("form").on("click", "#js-foodChoices", event => {
     event.stopPropagation();
     event.preventDefault();
-    foodTypeQueryStr = $('#foodChoice').val();
-    console.log(foodTypeQueryStr);
-    findRestaurants();
+    selectedFoodTypes = $('#foodChoice').val();
+    if(selectedFoodTypes.length > 10) {
+      $("#errorMessage").text("Please limit your options to 10 or fewer types of food");
+    } else {
+      $("#errorMessage").empty();
+      findRestaurants();
+    }
+    
   });
 }
 
