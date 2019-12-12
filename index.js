@@ -80,29 +80,23 @@ const searchAreaForm =
     <button type="submit" id="js-findRestaurants">Find Restaurants</button>
   </fieldset>`;
 
-const restaurantDetails = 
-`<h2>${selectedRestaurant.name}</h2>
-<address>${displayAddress}</address>
-<p>Phone: ${selectedRestaurant.phone}</p>
-<p>Price Level: ${selectedRestaurant.price}</p>
-<p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.review_count} Yelp users</p>
-<a target="_blank" href="${selectedRestaurant.url}">Check out this restaurant's Yelp page</a>`;
 
-function reset() {
-  priceStr = "";
-  foodTypesQueryStr = "";
-  searchLocation = "";
-  restaurantList = [];
-  selectedRestaurant = {};
-  myLat = "";
-  myLng = "";
-  selectedLat = "";
-  selectedLng = "";
-  $('h1').text("Dinner Decider");
-  $('form').removeClass('hidden');
-  $('#js-results').addClass('hidden');
-  $('#restaurantDetails').empty();
-}
+
+// function reset() {
+//   priceStr = "";
+//   foodTypesQueryStr = "";
+//   searchLocation = "";
+//   restaurantList = [];
+//   selectedRestaurant = {};
+//   myLat = "";
+//   myLng = "";
+//   selectedLat = "";
+//   selectedLng = "";
+//   $('h1').text("Dinner Decider");
+//   $('form').removeClass('hidden');
+//   $('#js-results').addClass('hidden');
+//   $('#restaurantDetails').empty();
+// }
 
 function displayResults() {
   selectedRestaurant = restaurantList[Math.floor(Math.random() * restaurantList.length)];
@@ -150,7 +144,7 @@ function findRestaurants() {
       Authorization: "Bearer fp5JUQ_Jg-Ll55NX9SzinZpoxO4xOh4xBLAG48ABeNpwM9Qw843vgx4jNHnviA0z3beWMWOMFfTAdKBeN40-i1H4NUvM2540Vn8r_j7yg8qrC9Ln7nvYAISzbxTsXXYx"
     })
   }
-  let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?price=${priceStr}&limit=50&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=5000&categories=${selectedFoodTypes}`
+  let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?price=${priceStr}&limit=50&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=5000&categories=${selectedFoodTypes}`;
   console.log(`finding ${selectedFoodTypes} restaurants with price options (${priceStr}) near ${myLat}, ${myLng}`);
   fetch(url, options)
     .then(response => {
