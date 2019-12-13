@@ -25,7 +25,7 @@ const priceForm =
 const foodForm =
   `<fieldset>
   <legend><h2>What types of food are you interested in right now?</h2></legend>
-  <p>Choose 10 or fewer categories for best results</p>
+  <p>Choose 10 or fewer categories for best results. Hold ctrl/command key to select multiple options.</p>
   <select id="foodChoice" multiple required>
     <option value="restaurants">Surprise Me</option>
     <option value="hotdogs">Fast Food</option>
@@ -75,6 +75,7 @@ const foodForm =
 const searchAreaForm =
   `<fieldset>
     <legend><h2>Please enter your starting location</h2></legend>
+    <p>For best results, omit apartment/suite numbers</p>
     <label for="streetAddress">Street Address:</label>
     <input type="text" name="streetAddress" id="streetAddress">
     <label for="city">City:</label>
@@ -86,21 +87,30 @@ const searchAreaForm =
 
 
 
-// function reset() {
-//   priceStr = "";
-//   foodTypesQueryStr = "";
-//   searchLocation = "";
-//   restaurantList = [];
-//   selectedRestaurant = {};
-//   myLat = "";
-//   myLng = "";
-//   selectedLat = "";
-//   selectedLng = "";
-//   $('h1').text("Dinner Decider");
-//   $('form').removeClass('hidden');
-//   $('#js-results').addClass('hidden');
-//   $('#restaurantDetails').empty();
-// }
+function resetAll() {
+  priceStr = "";
+  foodTypesQueryStr = "";
+  searchLocation = "";
+  restaurantList = [];
+  selectedRestaurant = {};
+  myLat = "";
+  myLng = "";
+  selectedLat = "";
+  selectedLng = "";
+  $('h1').text("Dinner Decider");
+  $('form').removeClass('hidden');
+  $('#js-results').addClass('hidden');
+  $('#restaurantDetails').empty();
+}
+
+function resetQueryParams() {
+  priceStr = "";
+  foodTypesQueryStr = "";
+  restaurantList = [];
+  selectedRestaurant = {};
+  selectedLat = "";
+  selectedLng = "";
+}
 
 function displayResults() {
   selectedRestaurant = restaurantList[Math.floor(Math.random() * restaurantList.length)];
@@ -238,7 +248,7 @@ function getSearchParams() {
 }
 
 function watchForm() {
-  $('#js-getStarted').click(event => {
+  $('form').on('click', '#js-getStarted', event => {
     event.stopPropagation();
     event.preventDefault();
     // reset();

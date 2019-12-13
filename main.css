@@ -105,6 +105,10 @@ label, select, address, a, p {
   font-size: 1.25em;
 }
 
+form p {
+  text-align: center;
+}
+
 #restaurantDetails {
   text-align: center;
 }
