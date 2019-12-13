@@ -13,6 +13,11 @@ let priceStr,
 const yelpKey = config.yfapi,
   openCageDataKey = config.ocdapi;
 
+const startupForm = 
+  `<h2 class="opener">Trouble deciding on a place to eat? Indecisive friends and family? Dinner Decider will figure it out for you!</h2>
+  <p>Enter your location, what types of food you'd be interested in, and a price range to play a quick game of restaurant roulette...</p> 
+  <button id="js-getStarted">Get Started</button>`
+
 const priceForm =
   `<fieldset>
   <legend><h2>How expensive would you like your restaurant options to be?</h2></legend>
@@ -92,7 +97,7 @@ const searchAreaForm =
 
 function resetAll() {
   priceStr = "";
-  foodTypesQueryStr = "";
+  selectedFoodTypes = "";
   searchLocation = "";
   restaurantList = [];
   selectedRestaurant = {};
@@ -100,15 +105,11 @@ function resetAll() {
   myLng = "";
   selectedLat = "";
   selectedLng = "";
-  $('h1').text("Dinner Decider");
-  $('form').removeClass('hidden');
-  $('#js-results').addClass('hidden');
-  $('#restaurantDetails').empty();
 }
 
 function resetQueryParams() {
   priceStr = "";
-  foodTypesQueryStr = "";
+  selectedFoodTypes = "";
   restaurantList = [];
   selectedRestaurant = {};
   selectedLat = "";
@@ -261,4 +262,19 @@ function watchForm() {
   });
 }
 
-$(watchForm);
+function startApp() {
+  resetAll();
+  $('#js-results').addClass('hidden');
+  $('h1').text("Dinner Decider");
+  $('form').html(startupForm);
+  $('form').removeClass('hidden');
+  $('#restaurantDetails').empty();
+  $('#home').click(event => {
+    event.preventDefault();
+    event.stopPropagation();
+    startApp();
+  });
+  watchForm();
+}
+
+$(startApp);
