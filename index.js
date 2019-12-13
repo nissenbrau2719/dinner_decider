@@ -1,14 +1,17 @@
-let priceStr = "";
-let selectedFoodTypes = "";
-let searchLocation = "";
-let restaurantList = [];
-let selectedRestaurant = {};
-let map;
-let myLat;
-let myLng;
-let selectedLat;
-let selectedLng;
-let displayAddress;
+let priceStr,
+  selectedFoodTypes,
+  searchLocation,
+  restaurantList,
+  selectedRestaurant,
+  map,
+  myLat,
+  myLng,
+  selectedLat,
+  selectedLng,
+  displayAddress;
+
+const yelpKey = config.yfapi,
+  openCageDataKey = config.ocdapi;
 
 const priceForm =
   `<fieldset>
@@ -155,7 +158,7 @@ function makeRestaurantList(responseJson) {
 function findRestaurants() {
   let options = {
     headers: new Headers ({
-      Authorization: "Bearer fp5JUQ_Jg-Ll55NX9SzinZpoxO4xOh4xBLAG48ABeNpwM9Qw843vgx4jNHnviA0z3beWMWOMFfTAdKBeN40-i1H4NUvM2540Vn8r_j7yg8qrC9Ln7nvYAISzbxTsXXYx"
+      Authorization: `Bearer ${yelpKey}`
     })
   }
   let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?price=${priceStr}&limit=50&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=5000&categories=${selectedFoodTypes}`;
@@ -207,7 +210,7 @@ function getPriceRange() {
 }
 
 function getGeoLocation() {
-  fetch(`https://api.opencagedata.com/geocode/v1/json?q=${searchLocation}&key=d7fb58f7f8a04aee8361fab49438c000`)
+  fetch(`https://api.opencagedata.com/geocode/v1/json?q=${searchLocation}&key=${openCageDataKey}`)
     .then(response => {
       if (response.ok) {
         return response.json()
