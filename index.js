@@ -9,7 +9,8 @@ let priceStr,
   myLng,
   selectedLat,
   selectedLng,
-  displayAddress;
+  displayAddress,
+  howExpensive;
 
 const yelpKey = config.yfapi,
   openCageDataKey = config.ocdapi;
@@ -190,6 +191,7 @@ function findRestaurants() {
 }
 
 function getFoodTypes() {
+  selectedFoodTypes = "";
   $("form").on("click", "#js-foodChoices", event => {
     event.stopPropagation();
     event.preventDefault();
@@ -205,7 +207,7 @@ function getFoodTypes() {
 }
 
 function getPriceRange() {
-  let howExpensive = [];
+  howExpensive = [];
   $("form").on("click", "#js-setPrices", event => {
     event.stopPropagation();
     event.preventDefault();
