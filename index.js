@@ -74,9 +74,13 @@ const foodForm =
 
 const searchAreaForm =
   `<fieldset>
-    <legend><h2>Let's roll the dice on some restaurants in your area!</h2></legend>
-    <label for="location">Enter an address or location to search nearby:</label>
-    <input type="text" name="location" id="location" required>
+    <legend><h2>Please enter your starting location</h2></legend>
+    <label for="streetAddress">Street Address:</label>
+    <input type="text" name="streetAddress" id="streetAddress">
+    <label for="city">City:</label>
+    <input type="text" name="city" id="city" required>
+    <label for="state">State:</label>
+    <input type="text" name="state" id="state" required>
     <button type="submit" id="js-findRestaurants">Find Restaurants</button>
   </fieldset>`;
 
@@ -193,7 +197,7 @@ function getPriceRange() {
 }
 
 function getGeoLocation() {
-  fetch(`https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=AIzaSyBaN2hqtLbLkXCLBsIJByMMEHoH9I_86lI`)
+  fetch(`https://api.opencagedata.com/geocode/v1/json?q=${searchLocation}&key=d7fb58f7f8a04aee8361fab49438c000`)
     .then(response => {
       if (response.ok) {
         return response.json()
@@ -201,25 +205,32 @@ function getGeoLocation() {
       throw new Error(response.statusText)
     })
     .then(responseJson => {
-      myLat = responseJson.results[0].geometry.location.lat;
-      myLng = responseJson.results[0].geometry.location.lng;
+      console.log(responseJson);
+      myLat = responseJson.results[0].geometry.lat;
+      myLng = responseJson.results[0].geometry.lng;
       $("form").empty();
       $("form").html(priceForm);
       getPriceRange();
       $("#errorMessage").empty();
     })
     .catch(error => $("#errorMessage").text(`Something went wrong: ${error.message}`));
-  }    
+}    
 
 function getSearchParams() {
   $('form').on('click', '#js-findRestaurants', function (event) {
     event.stopPropagation();
     event.preventDefault();
-    if ($('#location').val() === "") {
-      $("#errorMessage").text("Please enter an address or location");
+    if ($('#city').val() === "" || $('#state').val() === "") {
+      $("#errorMessage").text("Please enter a valid address to start your search from, or at least a city and state");
     } else {
-      let locationArr = $('#location').val().split(" ");
-      searchLocation = locationArr.join("+");
+      let locationArr = [];
+      if($('#streetAddress').val() !== "") {
+        locationArr.push($('#streetAddress').val());
+      }
+      locationArr.push($('#city').val());
+      locationArr.push($('#state').val());
+      searchLocation = encodeURI(locationArr.join(", "));
+      console.log(searchLocation);
       $("#errorMessage").empty();
       getGeoLocation();
     }
