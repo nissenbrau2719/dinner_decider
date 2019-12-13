@@ -34,7 +34,7 @@ const priceForm =
 const foodForm =
   `<fieldset>
   <legend><h2>What types of food are you interested in right now?</h2></legend>
-  <p>Choose 10 or fewer categories for best results. Hold ctrl/command key to select multiple options.</p>
+  <p>Choose 10 or fewer categories for best results.<br> Hold ctrl/command key to select multiple options.</p>
   <select id="foodChoice" multiple required>
     <option value="restaurants">Surprise Me</option>
     <option value="hotdogs">Fast Food</option>
@@ -101,9 +101,14 @@ const searchLocationForm =
     <button type="submit" id="js-submitLocation">Submit Location</button>
   </fieldset>`;
 
-
+function removeResults() {
+  $('h1').text('Dinner Decider');
+  $('#js-results').addClass('hidden');
+  $('#errorMessage').empty();
+}
 
 function resetAll() {
+  removeResults();
   priceStr = "";
   selectedFoodTypes = "";
   searchLocation = "";
@@ -117,6 +122,7 @@ function resetAll() {
 }
 
 function resetRestaurantParams() {
+  removeResults();
   priceStr = "";
   selectedFoodTypes = "";
   restaurantList = [];
@@ -142,15 +148,7 @@ function displayResults() {
   ); 
   $('h1').text("How about eating at:")
   $('#js-results').removeClass('hidden');
-  $('#js-reroll').click(event => {
-    event.preventDefault();
-    event.stopPropagation();
-    displayResults();
-  });
-  $('#js-startOver').click(event => {
-    event.preventDefault();
-    event.stopPropagation();
-  });
+  
 }
 
 function displayNoResults() {
@@ -297,11 +295,28 @@ function startApp() {
   resetAll();
   $('#js-results').addClass('hidden');
   $('#js-reroll').removeClass('hidden');
-  $('h1').text("Dinner Decider");
   $('form').html(startupForm);
   $('form').removeClass('hidden');
   $('#restaurantDetails').empty();
   $('#home').click(event => {
+    event.preventDefault();
+    event.stopPropagation();
+    startApp();
+  });
+  $('#js-reroll').click(event => {
+    event.preventDefault();
+    event.stopPropagation();
+    displayResults();
+  });
+  $('#js-newFoodParams').click(event => {
+    event.preventDefault();
+    event.stopPropagation();
+    resetRestaurantParams();
+    $('form').html(priceForm);
+    $('form').removeClass('hidden');
+    getPriceRange();
+  });
+  $('#js-startOver').click(event => {
     event.preventDefault();
     event.stopPropagation();
     startApp();
