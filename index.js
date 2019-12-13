@@ -1,6 +1,7 @@
 let priceStr,
   selectedFoodTypes,
   searchLocation,
+  searchRadius,
   restaurantList,
   selectedRestaurant,
   map,
@@ -79,8 +80,15 @@ const foodForm =
   <button type="submit" id="js-foodChoices">Submit Food Options</button>
 </fieldset>`;
 
+const searchAreaForm = 
+  `<fieldset>
+    <legend><h2>How far are you willing to travel?</h2></legend>
+    <label for="distance">Enter distance in mi:</label>
+    <input type="number" name="distance" id="distance" value="3" min="0.5" max="20" required>
+    <button type="submit" id="js-submitDistance">Submit Distance</button>
+  </fieldset>`
 
-const searchAreaForm =
+const searchLocationForm =
   `<fieldset>
     <legend><h2>Please enter your starting location</h2></legend>
     <p>For best results, omit apartment/suite numbers</p>
@@ -90,7 +98,7 @@ const searchAreaForm =
     <input type="text" name="city" id="city" required>
     <label for="state">State:</label>
     <input type="text" name="state" id="state" required>
-    <button type="submit" id="js-findRestaurants">Find Restaurants</button>
+    <button type="submit" id="js-submitLocation">Submit Location</button>
   </fieldset>`;
 
 
@@ -99,6 +107,7 @@ function resetAll() {
   priceStr = "";
   selectedFoodTypes = "";
   searchLocation = "";
+  searchRadius = "";
   restaurantList = [];
   selectedRestaurant = {};
   myLat = "";
@@ -107,7 +116,7 @@ function resetAll() {
   selectedLng = "";
 }
 
-function resetQueryParams() {
+function resetRestaurantParams() {
   priceStr = "";
   selectedFoodTypes = "";
   restaurantList = [];
@@ -133,8 +142,14 @@ function displayResults() {
   ); 
   $('h1').text("How about eating at:")
   $('#js-results').removeClass('hidden');
-  $('#js-reroll').click(function() {
+  $('#js-reroll').click(event => {
+    event.preventDefault();
+    event.stopPropagation();
     displayResults();
+  });
+  $('#js-startOver').click(event => {
+    event.preventDefault();
+    event.stopPropagation();
   });
 }
 
@@ -144,6 +159,7 @@ function displayNoResults() {
   $('h1').text("Sorry, we found no restaurants that fit your search criteria");
   $('#restaurantDetails').append("<h2>Would you like to restart?</h2>");
   $('#js-results').removeClass('hidden');
+
 }
 
 function makeRestaurantList(responseJson) {
@@ -162,8 +178,8 @@ function findRestaurants() {
       Authorization: `Bearer ${yelpKey}`
     })
   }
-  let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?price=${priceStr}&limit=50&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=5000&categories=${selectedFoodTypes}`;
-  console.log(`finding ${selectedFoodTypes} restaurants with price options (${priceStr}) near ${myLat}, ${myLng}`);
+  let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?price=${priceStr}&limit=50&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=${searchRadius}&categories=${selectedFoodTypes}`;
+  console.log(`finding ${selectedFoodTypes} restaurants with price options (${priceStr}) within ${searchRadius} m of ${myLat}, ${myLng}`);
   fetch(url, options)
     .then(response => {
       if (response.ok) {
@@ -210,6 +226,22 @@ function getPriceRange() {
   })    
 }
 
+function getSearchRadius() {
+  $('form').on('click', '#js-submitDistance', event => {
+    event.stopPropagation();
+    event.preventDefault();
+    if($('#distance').val() < 0.5 || $('#distance').val() > 20) {
+      $("#errorMessage").text("Please keep your search radius between 0.5 mi and 20 mi");
+    } else {
+      searchRadius = Math.floor($('#distance').val() * 1609.344);
+      $("form").empty();
+      $("form").html(priceForm);
+      $("#errorMessage").empty();
+      getPriceRange();
+    }
+  })
+}
+
 function getGeoLocation() {
   fetch(`https://api.opencagedata.com/geocode/v1/json?q=${searchLocation}&key=${openCageDataKey}`)
     .then(response => {
@@ -223,15 +255,15 @@ function getGeoLocation() {
       myLat = responseJson.results[0].geometry.lat;
       myLng = responseJson.results[0].geometry.lng;
       $("form").empty();
-      $("form").html(priceForm);
-      getPriceRange();
       $("#errorMessage").empty();
+      $("form").html(searchAreaForm);
+      getSearchRadius();
     })
     .catch(error => $("#errorMessage").text(`Something went wrong: ${error.message}`));
 }    
 
 function getSearchParams() {
-  $('form').on('click', '#js-findRestaurants', function (event) {
+  $('form').on('click', '#js-submitLocation', function (event) {
     event.stopPropagation();
     event.preventDefault();
     if ($('#city').val() === "" || $('#state').val() === "") {
@@ -255,9 +287,8 @@ function watchForm() {
   $('form').on('click', '#js-getStarted', event => {
     event.stopPropagation();
     event.preventDefault();
-    // reset();
     $('form').empty();
-    $('form').html(searchAreaForm);
+    $('form').html(searchLocationForm);
     getSearchParams();
   });
 }
@@ -265,6 +296,7 @@ function watchForm() {
 function startApp() {
   resetAll();
   $('#js-results').addClass('hidden');
+  $('#js-reroll').removeClass('hidden');
   $('h1').text("Dinner Decider");
   $('form').html(startupForm);
   $('form').removeClass('hidden');
