@@ -104,7 +104,7 @@ const searchLocationForm =
 function removeResults() {
   $('h1').text('Dinner Decider');
   $('#js-results').addClass('hidden');
-  $('#errorMessage').empty();
+  $('#errorMessage').empty;
 }
 
 function resetAll() {
