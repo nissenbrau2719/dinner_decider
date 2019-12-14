@@ -15,7 +15,7 @@ let priceStr,
 const yelpKey = config.yfapi,
   openCageDataKey = config.ocdapi;
 
-const startupForm = 
+const startupForm =
   `<h2 class="opener">Trouble deciding on a place to eat? Indecisive friends and family? Dinner Decider will figure it out for you!</h2>
   <p>Enter your location, what types of food you'd be interested in, and a price range to play a quick game of restaurant roulette...</p> 
   <button id="js-getStarted">Get Started</button>`
@@ -81,7 +81,7 @@ const foodForm =
   <button type="submit" id="js-foodChoices">Submit Food Options</button>
 </fieldset>`;
 
-const searchAreaForm = 
+const searchAreaForm =
   `<fieldset>
     <legend><h2>How far are you willing to travel?</h2></legend>
     <label for="distance">Enter distance in mi:</label>
@@ -105,11 +105,13 @@ const searchLocationForm =
 function removeResults() {
   $('h1').text('Dinner Decider');
   $('#js-results').addClass('hidden');
-  $('#errorMessage').empty;
+  $('#errorMessage').empty();
+  $('#restaurantDetails').empty();
 }
 
 function resetAll() {
   removeResults();
+  $("form").off();
   priceStr = "";
   selectedFoodTypes = "";
   searchLocation = "";
@@ -124,6 +126,7 @@ function resetAll() {
 
 function resetRestaurantParams() {
   removeResults();
+  $("form").off();
   priceStr = "";
   selectedFoodTypes = "";
   restaurantList = [];
@@ -146,10 +149,10 @@ function displayResults() {
     <p>Price Level: ${selectedRestaurant.price}</p>
     <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.review_count} Yelp users</p>
     <a target="_blank" href="${selectedRestaurant.url}">Check out this restaurant's Yelp page</a>`
-  ); 
+  );
   $('h1').text("How about eating at:")
   $('#js-results').removeClass('hidden');
-  
+
 }
 
 function displayNoResults() {
@@ -163,17 +166,18 @@ function displayNoResults() {
 
 function makeRestaurantList(responseJson) {
   $("#errorMessage").empty();
-  if(responseJson.businesses.length === 0) {
+  if (responseJson.businesses.length === 0) {
     displayNoResults();
   } else {
     restaurantList = responseJson.businesses;
+    console.log(`Found ${responseJson.businesses.length} restaurants with these search parameters`);
     displayResults();
   }
 }
 
 function findRestaurants() {
   let options = {
-    headers: new Headers ({
+    headers: new Headers({
       Authorization: `Bearer ${yelpKey}`
     })
   }
@@ -196,13 +200,12 @@ function getFoodTypes() {
     event.stopPropagation();
     event.preventDefault();
     selectedFoodTypes = $('#foodChoice').val();
-    if(selectedFoodTypes.length > 10) {
+    if (selectedFoodTypes.length > 10) {
       $("#errorMessage").text("Please limit your options to 10 or fewer types of food");
     } else {
       $("#errorMessage").empty();
       findRestaurants();
     }
-    
   });
 }
 
@@ -219,22 +222,21 @@ function getPriceRange() {
     } else {
       priceStr = howExpensive.join(",");
       $("#errorMessage").empty();
-      $("form").empty();
       $("form").html(foodForm);
       getFoodTypes();
     }
-  })    
+  })
 }
 
 function getSearchRadius() {
+  searchRadius = "";
   $('form').on('click', '#js-submitDistance', event => {
     event.stopPropagation();
     event.preventDefault();
-    if($('#distance').val() < 0.5 || $('#distance').val() > 20) {
+    if ($('#distance').val() < 0.5 || $('#distance').val() > 20) {
       $("#errorMessage").text("Please keep your search radius between 0.5 mi and 20 mi");
     } else {
       searchRadius = Math.floor($('#distance').val() * 1609.344);
-      $("form").empty();
       $("form").html(priceForm);
       $("#errorMessage").empty();
       getPriceRange();
@@ -251,16 +253,14 @@ function getGeoLocation() {
       throw new Error(response.statusText)
     })
     .then(responseJson => {
-      console.log(responseJson);
       myLat = responseJson.results[0].geometry.lat;
       myLng = responseJson.results[0].geometry.lng;
-      $("form").empty();
       $("#errorMessage").empty();
       $("form").html(searchAreaForm);
       getSearchRadius();
     })
     .catch(error => $("#errorMessage").text(`Something went wrong: ${error.message}`));
-}    
+}
 
 function getSearchParams() {
   $('form').on('click', '#js-submitLocation', function (event) {
@@ -270,13 +270,12 @@ function getSearchParams() {
       $("#errorMessage").text("Please enter a valid address to start your search from, or at least a city and state");
     } else {
       let locationArr = [];
-      if($('#streetAddress').val() !== "") {
+      if ($('#streetAddress').val() !== "") {
         locationArr.push($('#streetAddress').val());
       }
       locationArr.push($('#city').val());
       locationArr.push($('#state').val());
       searchLocation = encodeURI(locationArr.join(", "));
-      console.log(searchLocation);
       $("#errorMessage").empty();
       getGeoLocation();
     }
@@ -291,6 +290,7 @@ function watchForm() {
     $('form').html(searchLocationForm);
     getSearchParams();
   });
+
 }
 
 function startApp() {
@@ -300,6 +300,10 @@ function startApp() {
   $('form').html(startupForm);
   $('form').removeClass('hidden');
   $('#restaurantDetails').empty();
+  watchForm();
+}
+
+function initialize() {
   $('#home').click(event => {
     event.preventDefault();
     event.stopPropagation();
@@ -323,7 +327,7 @@ function startApp() {
     event.stopPropagation();
     startApp();
   });
-  watchForm();
+  startApp();
 }
 
-$(startApp);
+$(initialize);
