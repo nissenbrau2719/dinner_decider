@@ -2,7 +2,13 @@ html {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  background: url(https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2550&q=80) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
+
 *, *:before, *:after {
   -webkit-box-sizing: inherit;
   -moz-box-sizing: inherit;
@@ -13,16 +19,23 @@ html {
   display: none;
 }
 
+body{
+  font-family: 'Quicksand', sans-serif;
+}
+
 #errorMessage {
   color: red;
   font-weight: bold;
   text-align: center;
+  margin-top: 0;
 }
 
 h1 {
   text-align: center;
   padding: 25px 10px;
   margin-top: 50px;
+  color: whitesmoke;
+  font-family: 'Rock Salt', cursive;
 }
 
 form {
@@ -30,20 +43,49 @@ form {
   padding: 10px;
   width: 95%;
   max-width: 768px;
-  border: 1px solid black;
   border-radius: 5px;
+}
+
+main {
+  margin: 50px auto 0 auto;
+  padding: 15px;
+  width: 95%;
+  max-width: 768px;
+  border-radius: 5px;
+  background-color: rgba(59, 59, 59, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 button {
   display: block;
   margin: 25px auto;
   padding: 10px;
-  
+  background-color: transparent;
+  border: 1px whitesmoke solid;
+  border-radius: 3px;
+  color: whitesmoke;
+  outline-offset: 5px;
 }
 
-.opener {
+button:hover {
+  font-weight: 700;
+}
+
+a:focus, a:hover {
+  font-weight: 700;
+  cursor: pointer;
+}
+
+h2 {
   text-align: center;
-  padding: 20px 0;
+  padding-bottom: 20px;
+  color: white;
+  font-family: 'Sedgwick Ave', cursive;
+  font-size: 1.25em;
+  line-height: 1.5em;
 }
 
 nav {
@@ -55,9 +97,14 @@ nav {
   padding-top: 10px;
 }
 
-.container {
+.navContainer {
   max-width: 1440px;
-  margin: 0 auto
+  margin: 0 auto;
+  padding: 10px;
+}
+
+#errorContainer {
+  max-width: 768px;
 }
 
 #js-results {
@@ -66,14 +113,21 @@ nav {
 }
 
 .home {
-  margin: 20px;
+  padding: 5px 20px;
   text-decoration: none;
   font-size: 1.25em;
   color: black;
 }
 
 a {
-  text-decoration: none;
+  /* text-decoration: none; */
+  color: whitesmoke;
+  font-weight: 600;
+}
+
+
+input:focus {
+  outline: auto 8px -webkit-focus-ring-color;
 }
 
 fieldset {
@@ -85,9 +139,18 @@ input[type="checkbox"] {
   margin-right: 10px;
 }
 
+input[type="number"] {
+  background-color: transparent;
+  border-color: whitesmoke;
+  color: whitesmoke;
+}
+
 input[type="text"], select {
   display: block;
   margin: 5px auto 10px auto;
+  background-color: transparent;
+  border-color: whitesmoke;
+  color: whitesmoke;
 }
 
 ul {
@@ -103,6 +166,7 @@ li {
 
 label, select, address, a, p {
   font-size: 1.25em;
+  color: whitesmoke;
 }
 
 form p {
@@ -113,35 +177,25 @@ form p {
   text-align: center;
 }
 
-#mapContainer {
-  margin: 0 auto;
-  overflow: hidden;
-  max-width: 768px;
-  max-height: 538px;
-}
-
-#map {
-  height: 100%;
-  width: 100%
-}
-
-
-
 @media screen and (min-width: 768px) {
   h1 {
     font-size: 3.5em;
   }
 
   h2 {
-    font-size: 2em;
+    font-size: 2.5em;
   }
 
   p, button, input, label, select, address, a {
     font-size: 1.5em; 
   }
 
+  input[type=checkbox] {
+    transform: scale(1.25);
+  }
+
   .home {
-    font-size: 1.75em;
+    font-size: 2em;
   }
 
   button {
@@ -150,7 +204,7 @@ form p {
 
 
   form {
-    padding: 25px;
+    padding: 0 25px 0 25px;
   }
 
   input {
@@ -162,8 +216,39 @@ form p {
   }
 }
 
-@media screen and (min-width: 1440px) {
+@media screen and (min-width: 1000px) {
+  main {
+    background-color: rgba(59, 59, 59, 0.7);
+    margin: 50px auto 0 auto;
+    border-radius: 50%;
+    max-width: 1000px;
+    width: 1000px;
+    height: 1000px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 25px;
+  }
+  
   h1 {
     font-size: 5em;
   }
+
+  h2 {
+    font-size: 2.75em;
+  }
+
+  .home {
+    font-size: 3em;
+  }
+
+  p, button, input, label, select, address, a {
+    font-size: 1.75em; 
+  }
+
+  input[type=checkbox] {
+    transform: scale(1.5);
+  }
+
 }

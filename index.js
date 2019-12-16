@@ -16,8 +16,8 @@ const yelpKey = config.yfapi,
   openCageDataKey = config.ocdapi;
 
 const startupForm =
-  `<h2 class="opener">Trouble deciding on a place to eat? Indecisive friends and family? Dinner Decider will figure it out for you!</h2>
-  <p>Enter your location, what types of food you'd be interested in, and a price range to play a quick game of restaurant roulette...</p> 
+  `<h2 class="opener">Trouble deciding where to eat?<br>Indecisive friends and family?<br>Restaurant Roulette will figure it out for you!</h2>
+  <p>Let's take a gamble on your next meal...</p> 
   <button id="js-getStarted">Get Started</button>`
 
 const priceForm =
@@ -37,7 +37,7 @@ const foodForm =
   <legend><h2>What types of food are you interested in right now?</h2></legend>
   <p>Choose 10 or fewer categories for best results.<br> Hold ctrl/command key to select multiple options.</p>
   <select id="foodChoice" multiple required>
-    <option value="restaurants">Surprise Me</option>
+    <option selected value="">Surprise Me</option>
     <option value="hotdogs">Fast Food</option>
     <option value="delis">Deli</option>
     <option value="bbq">Barbecue</option>
@@ -85,7 +85,7 @@ const searchAreaForm =
   `<fieldset>
     <legend><h2>How far are you willing to travel?</h2></legend>
     <label for="distance">Enter distance in mi:</label>
-    <input type="number" name="distance" id="distance" value="3" min="0.5" max="20" required>
+    <input type="number" name="distance" id="distance" value="3" min="0.5" max="20" step="0.5" required>
     <button type="submit" id="js-submitDistance">Submit Distance</button>
   </fieldset>`
 
@@ -103,7 +103,7 @@ const searchLocationForm =
   </fieldset>`;
 
 function removeResults() {
-  $('h1').text('Dinner Decider');
+  $('h1').text('Restaurant Roulette');
   $('#js-results').addClass('hidden');
   $('#errorMessage').empty();
   $('#restaurantDetails').empty();
@@ -150,7 +150,7 @@ function displayResults() {
     <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.review_count} Yelp users</p>
     <a target="_blank" href="${selectedRestaurant.url}">Check out this restaurant's Yelp page</a>`
   );
-  $('h1').text("How about eating at:")
+  $('h1').text("How about eating at :")
   $('#js-results').removeClass('hidden');
 
 }
@@ -158,8 +158,9 @@ function displayResults() {
 function displayNoResults() {
   $('form').addClass('hidden');
   $('#js-reroll').addClass('hidden');
-  $('h1').text("Sorry, we found no restaurants that fit your search criteria");
-  $('#restaurantDetails').append("<h2>Would you like to restart?</h2>");
+  // $('h1').text("Sorry, we found no restaurants that fit your search criteria");
+  $('h1').removeClass('hidden');
+  $('#restaurantDetails').append("<h2>Sorry, we found no restaurants that fit your search criteria.<br>Would you like to restart?</h2>");
   $('#js-results').removeClass('hidden');
 
 }
@@ -286,7 +287,6 @@ function watchForm() {
   $('form').on('click', '#js-getStarted', event => {
     event.stopPropagation();
     event.preventDefault();
-    $('form').empty();
     $('form').html(searchLocationForm);
     getSearchParams();
   });
