@@ -191,7 +191,10 @@ function findRestaurants() {
       }
       throw new Error(response.statusText);
     })
-    .then(responseJson => makeRestaurantList(responseJson))
+    .then(responseJson => {
+      console.log(responseJson);
+      makeRestaurantList(responseJson);
+    })
     .catch(error => $('#errorMessage').text(`Something went wrong: ${error.message}`));
 }
 
