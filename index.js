@@ -10,6 +10,8 @@ let priceStr,
   selectedLat,
   selectedLng,
   displayAddress,
+  resultsOffset = 51,
+  totalResults,
   howExpensive;
 
 const yelpKey = config.yfapi,
@@ -122,6 +124,8 @@ function resetAll() {
   myLng = "";
   selectedLat = "";
   selectedLng = "";
+  resultsOffset = 51;
+  totalResults = 0;
 }
 
 function resetRestaurantParams() {
@@ -133,14 +137,16 @@ function resetRestaurantParams() {
   selectedRestaurant = {};
   selectedLat = "";
   selectedLng = "";
+  resultsOffset = 51;
+  totalResults = 0;
 }
 
 function displayResults() {
   selectedRestaurant = restaurantList[Math.floor(Math.random() * restaurantList.length)];
-  // console.log(selectedRestaurant);
   selectedLat = selectedRestaurant.coordinates.latitude;
   selectedLng = selectedRestaurant.coordinates.longitude;
   displayAddress = selectedRestaurant.location.display_address.join("<br>");
+  $("#errorMessage").empty();
   $('form').addClass('hidden');
   $('#restaurantDetails').html(
     `<h2>${selectedRestaurant.name}</h2>
@@ -152,29 +158,44 @@ function displayResults() {
   );
   $('h1').text("How about eating at :")
   $('#js-results').removeClass('hidden');
-
 }
 
 function displayNoResults() {
+  $("#errorMessage").empty();
   $('form').addClass('hidden');
   $('#js-reroll').addClass('hidden');
-  // $('h1').text("Sorry, we found no restaurants that fit your search criteria");
-  $('h1').removeClass('hidden');
   $('#restaurantDetails').append("<h2>Sorry, we found no restaurants that fit your search criteria.<br>Would you like to restart?</h2>");
   $('#js-results').removeClass('hidden');
-
 }
 
-function makeRestaurantList(responseJson) {
-  $("#errorMessage").empty();
-  if (responseJson.businesses.length === 0) {
-    displayNoResults();
-  } else {
-    restaurantList = responseJson.businesses;
-    console.log(`Found ${responseJson.businesses.length} restaurants with these search parameters`);
-    displayResults();
+function findMoreRestaurants() {
+  console.log(`Getting next set of results starting at ${resultsOffset}`);
+  let options = {
+    headers: new Headers({
+      Authorization: `Bearer ${yelpKey}`
+    })
   }
+  let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?price=${priceStr}&limit=50&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=${searchRadius}&categories=${selectedFoodTypes}&offset=${resultsOffset}`;
+  fetch(url, options)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(response.statusText);
+    })
+    .then(responseJson => {
+      restaurantList = restaurantList.concat(responseJson.businesses);
+      console.log(restaurantList.length);
+      if (restaurantList.length === (totalResults - 1)) {
+        displayResults();
+      } else {
+        resultsOffset += 50;
+        findMoreRestaurants();
+      }
+    })
+    .catch(error => $('#errorMessage').text(`Something went wrong: ${error.message}`));
 }
+
 
 function findRestaurants() {
   let options = {
@@ -187,13 +208,22 @@ function findRestaurants() {
   fetch(url, options)
     .then(response => {
       if (response.ok) {
-        return response.json()
+        return response.json();
+      } else {
+        throw new Error(response.statusText);
       }
-      throw new Error(response.statusText);
     })
     .then(responseJson => {
-      console.log(responseJson);
-      makeRestaurantList(responseJson);
+      console.log(`Found ${responseJson.total} restaurants with these search parameters`);
+      totalResults = responseJson.total;
+      restaurantList = responseJson.businesses;
+      if (responseJson.total === 0) {
+        displayNoResults();
+      } else if (responseJson.total > 0 && responseJson.total <= 50) {
+        displayResults();
+      } else {
+        findMoreRestaurants();
+      }
     })
     .catch(error => $('#errorMessage').text(`Something went wrong: ${error.message}`));
 }
