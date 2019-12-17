@@ -37,7 +37,7 @@ const priceForm =
 const foodForm =
   `<fieldset>
   <legend><h2>What types of food are you interested in right now?</h2></legend>
-  <p>Choose 10 or fewer categories for best results.<br> Hold ctrl/command key to select multiple options.</p>
+  <p>Hold ctrl/command key to select multiple options.</p>
   <select id="foodChoice" multiple required>
     <option selected value="">Surprise Me</option>
     <option value="hotdogs">Fast Food</option>
@@ -323,7 +323,6 @@ function watchForm() {
     $('form').html(searchLocationForm);
     getSearchParams();
   });
-
 }
 
 function startApp() {
