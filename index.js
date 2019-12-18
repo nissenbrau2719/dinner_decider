@@ -180,7 +180,11 @@ function findMoreRestaurants() {
         displayResults();
       } else {
         resultsOffset += 50;
-        findMoreRestaurants();
+        if(resultsOffset > 950) {
+          displayResults();
+        } else {
+          findMoreRestaurants();
+        }
       }
     })
     .catch(error => $('#errorMessage').text(`Something went wrong: ${error.message}`));
