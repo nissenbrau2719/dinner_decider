@@ -7,12 +7,9 @@ let priceStr,
   map,
   myLat,
   myLng,
-  selectedLat,
-  selectedLng,
   displayAddress,
   resultsOffset = 51,
   totalResults,
-  delivery = false,
   howExpensive;
 
 const yelpKey = config.yfapi,
@@ -40,7 +37,7 @@ const foodForm =
   <legend><h2>What types of food are you interested in right now?</h2></legend>
   <p>Hold ctrl/command key to select multiple options.</p>
   <select id="foodChoice" multiple required>
-    <option selected value="">Surprise Me</option>
+    <option selected value="restaurants">Surprise Me</option>
     <option value="hotdogs">Fast Food</option>
     <option value="delis">Deli</option>
     <option value="bbq">Barbecue</option>
@@ -88,8 +85,7 @@ const searchAreaForm =
   `<fieldset>
     <legend><h2>How far are you willing to travel?</h2></legend>
     <label for="distance">Enter distance in mi:</label>
-    <input type="number" name="distance" id="distance" value="3" min="0.5" max="20" step="0.5" required><br>
-    <input type="checkbox" name="delivery" id="delivery" value="delivery"><label for="delivery">Delivery options only</label>
+    <input type="number" name="distance" id="distance" value="3" min="0.5" max="20" step="0.5" required>   
     <button type="submit" id="js-submitDistance">Submit Distance</button>
   </fieldset>`
 
@@ -124,10 +120,7 @@ function resetAll() {
   selectedRestaurant = {};
   myLat = "";
   myLng = "";
-  selectedLat = "";
-  selectedLng = "";
   resultsOffset = 51;
-  delivery = false;
   totalResults = 0;
 }
 
@@ -138,17 +131,12 @@ function resetRestaurantParams() {
   selectedFoodTypes = "";
   restaurantList = [];
   selectedRestaurant = {};
-  selectedLat = "";
-  selectedLng = "";
   resultsOffset = 51;
-  delivery = false;
   totalResults = 0;
 }
 
 function displayResults() {
   selectedRestaurant = restaurantList[Math.floor(Math.random() * restaurantList.length)];
-  selectedLat = selectedRestaurant.coordinates.latitude;
-  selectedLng = selectedRestaurant.coordinates.longitude;
   displayAddress = selectedRestaurant.location.display_address.join("<br>");
   $("#errorMessage").empty();
   $('form').addClass('hidden');
@@ -158,13 +146,9 @@ function displayResults() {
     <p>Phone: ${selectedRestaurant.display_phone}</p>
     <p>Price Level: ${selectedRestaurant.price}</p>
     <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.review_count} Yelp users</p>
-    <a target="_blank" href="${selectedRestaurant.url}">Check out this restaurant's Yelp page</a>`
+    <a target="_blank" href="${selectedRestaurant.url}">Check out the Yelp page for hours, directions, and more info</a>`
   );
-  if(delivery) {
-    $('h1').text("How about delivery from");
-  } else {
-     $('h1').text("How about eating at");
-  }
+  $('h1').text("How about eating at");
   $('#js-results').removeClass('hidden');
 }
 
@@ -176,27 +160,7 @@ function displayNoResults() {
   $('#js-results').removeClass('hidden');
 }
 
-function deliveryCheck () {
-  if(delivery) {
-    let deliveryList = [];
-    for(let i = 0; i < restaurantList.length; i++) {
-      if(restaurantList[i].transactions.includes("delivery")) {
-        deliveryList.push(restaurantList[i]);
-      }
-    }
-    if(deliveryList.length === 0) {
-      displayNoResults();
-    } else {
-      restaurantList = deliveryList;
-      displayResults();
-    }
-  } else { 
-    displayResults();
-  }
-}
-
 function findMoreRestaurants() {
-  console.log(`Getting next set of results starting at ${resultsOffset}`);
   let options = {
     headers: new Headers({
       Authorization: `Bearer ${yelpKey}`
@@ -212,9 +176,8 @@ function findMoreRestaurants() {
     })
     .then(responseJson => {
       restaurantList = restaurantList.concat(responseJson.businesses);
-      console.log(restaurantList.length);
       if (restaurantList.length === (totalResults - 1)) {
-        deliveryCheck();
+        displayResults();
       } else {
         resultsOffset += 50;
         findMoreRestaurants();
@@ -223,7 +186,6 @@ function findMoreRestaurants() {
     .catch(error => $('#errorMessage').text(`Something went wrong: ${error.message}`));
 }
 
-
 function findRestaurants() {
   let options = {
     headers: new Headers({
@@ -231,7 +193,7 @@ function findRestaurants() {
     })
   }
   let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?price=${priceStr}&limit=50&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=${searchRadius}&categories=${selectedFoodTypes}`;
-  console.log(`finding ${selectedFoodTypes} restaurants with price options (${priceStr}) within ${searchRadius} m of ${myLat}, ${myLng}`);
+  console.log(`finding ${selectedFoodTypes} with price options (${priceStr}) within ${searchRadius} m of ${myLat}, ${myLng}`);
   fetch(url, options)
     .then(response => {
       if (response.ok) {
@@ -247,7 +209,7 @@ function findRestaurants() {
       if (responseJson.total === 0) {
         displayNoResults();
       } else if (responseJson.total > 0 && responseJson.total <= 50) {
-        deliveryCheck();
+        displayResults();
       } else {
         findMoreRestaurants();
       }
@@ -298,10 +260,6 @@ function getSearchRadius() {
       $("#errorMessage").text("Please keep your search radius between 0.5 mi and 20 mi");
     } else {
       searchRadius = Math.floor($('#distance').val() * 1609.344);
-      if($("#delivery").prop("checked")) {
-        console.log("delivery only");
-        delivery = true;
-      }
       $("form").html(priceForm);
       $("#errorMessage").empty();
       getPriceRange();
