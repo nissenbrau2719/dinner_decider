@@ -13,20 +13,20 @@
 <body>
   <nav>
     <div class="navContainer">
-      <a id="home" href="" title="Home"><i class="fas fa-utensils"></i></a>
+      <a id="home" title="Restart"><i class="fas fa-utensils"></i></a>
     </div>
   </nav>
   <header>
     <h1>Restaurant Roulette</h1>
   </header>
   <main>
-    <form>
+    <form aria-live="polite">
     </form> 
-    <div id="errorContainer">
+    <div id="errorContainer" aria-live="assertive">
       <p id="errorMessage"></p>
     </div>
     
-    <section id="js-results" class="hidden">
+    <section id="js-results" class="hidden" aria-live="polite">
       <div id="restaurantDetails">
 
       </div>

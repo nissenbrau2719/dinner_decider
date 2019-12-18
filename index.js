@@ -12,6 +12,7 @@ let priceStr,
   displayAddress,
   resultsOffset = 51,
   totalResults,
+  delivery = false,
   howExpensive;
 
 const yelpKey = config.yfapi,
@@ -87,7 +88,8 @@ const searchAreaForm =
   `<fieldset>
     <legend><h2>How far are you willing to travel?</h2></legend>
     <label for="distance">Enter distance in mi:</label>
-    <input type="number" name="distance" id="distance" value="3" min="0.5" max="20" step="0.5" required>
+    <input type="number" name="distance" id="distance" value="3" min="0.5" max="20" step="0.5" required><br>
+    <input type="checkbox" name="delivery" id="delivery" value="delivery"><label for="delivery">Delivery options only</label>
     <button type="submit" id="js-submitDistance">Submit Distance</button>
   </fieldset>`
 
@@ -125,6 +127,7 @@ function resetAll() {
   selectedLat = "";
   selectedLng = "";
   resultsOffset = 51;
+  delivery = false;
   totalResults = 0;
 }
 
@@ -138,6 +141,7 @@ function resetRestaurantParams() {
   selectedLat = "";
   selectedLng = "";
   resultsOffset = 51;
+  delivery = false;
   totalResults = 0;
 }
 
@@ -151,12 +155,16 @@ function displayResults() {
   $('#restaurantDetails').html(
     `<h2>${selectedRestaurant.name}</h2>
     <address>${displayAddress}</address>
-    <p>Phone: ${selectedRestaurant.phone}</p>
+    <p>Phone: ${selectedRestaurant.display_phone}</p>
     <p>Price Level: ${selectedRestaurant.price}</p>
     <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.review_count} Yelp users</p>
     <a target="_blank" href="${selectedRestaurant.url}">Check out this restaurant's Yelp page</a>`
   );
-  $('h1').text("How about eating at :")
+  if(delivery) {
+    $('h1').text("How about delivery from");
+  } else {
+     $('h1').text("How about eating at");
+  }
   $('#js-results').removeClass('hidden');
 }
 
@@ -166,6 +174,25 @@ function displayNoResults() {
   $('#js-reroll').addClass('hidden');
   $('#restaurantDetails').append("<h2>Sorry, we found no restaurants that fit your search criteria.<br>Would you like to restart?</h2>");
   $('#js-results').removeClass('hidden');
+}
+
+function deliveryCheck () {
+  if(delivery) {
+    let deliveryList = [];
+    for(let i = 0; i < restaurantList.length; i++) {
+      if(restaurantList[i].transactions.includes("delivery")) {
+        deliveryList.push(restaurantList[i]);
+      }
+    }
+    if(deliveryList.length === 0) {
+      displayNoResults();
+    } else {
+      restaurantList = deliveryList;
+      displayResults();
+    }
+  } else { 
+    displayResults();
+  }
 }
 
 function findMoreRestaurants() {
@@ -187,7 +214,7 @@ function findMoreRestaurants() {
       restaurantList = restaurantList.concat(responseJson.businesses);
       console.log(restaurantList.length);
       if (restaurantList.length === (totalResults - 1)) {
-        displayResults();
+        deliveryCheck();
       } else {
         resultsOffset += 50;
         findMoreRestaurants();
@@ -220,7 +247,7 @@ function findRestaurants() {
       if (responseJson.total === 0) {
         displayNoResults();
       } else if (responseJson.total > 0 && responseJson.total <= 50) {
-        displayResults();
+        deliveryCheck();
       } else {
         findMoreRestaurants();
       }
@@ -271,6 +298,10 @@ function getSearchRadius() {
       $("#errorMessage").text("Please keep your search radius between 0.5 mi and 20 mi");
     } else {
       searchRadius = Math.floor($('#distance').val() * 1609.344);
+      if($("#delivery").prop("checked")) {
+        console.log("delivery only");
+        delivery = true;
+      }
       $("form").html(priceForm);
       $("#errorMessage").empty();
       getPriceRange();

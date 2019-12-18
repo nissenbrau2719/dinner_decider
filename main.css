@@ -7,6 +7,7 @@ html {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  background-color: black;
 }
 
 *, *:before, *:after {
@@ -37,12 +38,12 @@ h1 {
   color: whitesmoke;
   font-family: 'Rock Salt', cursive;
   text-shadow:
-  -1px -1px 5px rgba(59, 59, 59, 0.7),
-  0px -1px 5px rgba(59, 59, 59, 0.7),
-  1px -1px 5px rgba(59, 59, 59, 0.7),
-  -1px 1px 5px rgba(59, 59, 59, 0.7),
-  0px 1px 5px rgba(59, 59, 59, 0.7),
-  1px 1px 5px rgba(59, 59, 59, 0.7);
+  -1px -1px 10px rgba(59, 59, 59, 0.7),
+  0px -1px 10px rgba(59, 59, 59, 0.7),
+  1px -1px 10px rgba(59, 59, 59, 0.7),
+  -1px 1px 10px rgba(59, 59, 59, 0.7),
+  0px 1px 10px rgba(59, 59, 59, 0.7),
+  1px 1px 10px rgba(59, 59, 59, 0.7);
 }
 
 form {
@@ -119,7 +120,7 @@ nav {
   padding: 5px 20px;
   text-decoration: none;
   font-size: 1.25em;
-  color: black;
+  color: whitesmoke;
 }
 
 a {
@@ -129,8 +130,8 @@ a {
 
 
 *:focus, i:focus, i:hover {
-  outline:1px solid rgb(255, 187, 0); 
-  outline-offset:1px;
+  outline: 1px solid rgb(255, 187, 0); 
+  outline-offset: 1px;
   box-shadow:
   -1px -1px 5px rgba(255, 187, 0, 0.7),
   0px -1px 5px rgba(255, 187, 0, 0.7),
@@ -153,6 +154,7 @@ input[type="number"] {
   background-color: transparent;
   border-color: whitesmoke;
   color: whitesmoke;
+  margin-left: 10px;
 }
 
 input[type="text"], select {
