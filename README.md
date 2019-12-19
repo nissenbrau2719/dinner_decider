@@ -30,4 +30,17 @@ The app is written using
 * JavaScript
 * jQuery
 
+Screenshots
+------------
+![image](https://user-images.githubusercontent.com/52768967/71213021-cd578280-226f-11ea-8567-e8142442918e.png)
+
+![image](https://user-images.githubusercontent.com/52768967/71213112-0263d500-2270-11ea-9239-586af5f19465.png)
+
+![image](https://user-images.githubusercontent.com/52768967/71213249-43f48000-2270-11ea-9e54-20edd23651cf.png)
+
+![image](https://user-images.githubusercontent.com/52768967/71213287-5969aa00-2270-11ea-8a75-60b2251a5f1f.png)
+
+![image](https://user-images.githubusercontent.com/52768967/71213329-6eded400-2270-11ea-9929-464c5f45b894.png)
+
+![image](https://user-images.githubusercontent.com/52768967/71213503-e7de2b80-2270-11ea-8a70-9f7659dbab8c.png)
 
