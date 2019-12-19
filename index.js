@@ -13,16 +13,14 @@ let priceStr,
   howExpensive;
 
 const yelpKey = config.yfapi,
-  openCageDataKey = config.ocdapi;
-
-const startupForm =
+  openCageDataKey = config.ocdapi,
+  startupForm =
   `<h2 class="opener">Trouble deciding where to eat?<br>Indecisive friends and family?<br>Restaurant Roulette will figure it out for you!</h2>
   <p>Let's take a gamble on your next meal...</p> 
   <button id="js-getStarted">Get Started</button>
   <p class="instructions">Search and results powered by<br>
-  <a href="https://www.yelp.com/" target="_blank"><img id="yelpLogo" src="https://s3-media3.fl.yelpcdn.com/assets/srv0/yelp_design_web/b085a608c15f/assets/img/logos_desktop/default@2x.png" alt="Yelp Logo"></a></p>`
-
-const priceForm =
+  <a href="https://www.yelp.com/" target="_blank"><img id="yelpLogo" src="https://s3-media3.fl.yelpcdn.com/assets/srv0/yelp_design_web/b085a608c15f/assets/img/logos_desktop/default@2x.png" alt="Yelp Logo"></a></p>`,
+  priceForm =
   `<fieldset>
   <legend><h2>How expensive would you like your restaurant options to be?</h2></legend>
   <ul>
@@ -32,9 +30,8 @@ const priceForm =
     <li><input type="checkbox" name="priceRange" id="very_expensive" value="4"><label for="very_expensive">Very Expensive</label></li>
   </ul>
   <button type="submit" id="js-setPrices">Set Price Options</button>
-  </fieldset>`;
-
-const foodForm =
+  </fieldset>`,
+  foodForm =
   `<fieldset>
   <legend><h2>What types of food are you interested in right now?</h2></legend>
   <p class="instructions">Hold ctrl/command key to select multiple options.</p>
@@ -80,17 +77,15 @@ const foodForm =
     <option value="wraps">Wraps</option>
   </select>
   <button type="submit" id="js-foodChoices">Submit Food Options</button>
-</fieldset>`;
-
-const searchAreaForm =
+</fieldset>`,
+  searchAreaForm =
   `<fieldset>
     <legend><h2>How far are you willing to travel?</h2></legend>
     <label for="distance">Enter distance in mi:</label>
     <input type="number" name="distance" id="distance" value="3" min="0.5" max="20" step="0.5" required>   
     <button type="submit" id="js-submitDistance">Submit Distance</button>
-  </fieldset>`
-
-const searchLocationForm =
+  </fieldset>`,
+  searchLocationForm =
   `<fieldset>
     <legend><h2>Please enter your starting location</h2></legend>
     <p class="instructions">For best results, omit apartment/suite numbers</p>
