@@ -116,6 +116,21 @@ nav {
   margin: 0 auto;
 }
 
+#restaurantNameContainer {
+  max-width: 698px;
+}
+
+#attribution {
+  font-style: italic;
+}
+
+#js-getStarted {
+  margin-bottom: 75px;
+}
+
+a img {
+  margin-top: 10px;
+}
 .home {
   padding: 5px 20px;
   text-decoration: none;

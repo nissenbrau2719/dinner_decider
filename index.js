@@ -18,7 +18,9 @@ const yelpKey = config.yfapi,
 const startupForm =
   `<h2 class="opener">Trouble deciding where to eat?<br>Indecisive friends and family?<br>Restaurant Roulette will figure it out for you!</h2>
   <p>Let's take a gamble on your next meal...</p> 
-  <button id="js-getStarted">Get Started</button>`
+  <button id="js-getStarted">Get Started</button>
+  <p id="attribution">Search and results powered by<br>
+  <a href="https://www.yelp.com/" target="_blank"><img src="https://s3-media3.fl.yelpcdn.com/assets/srv0/yelp_design_web/b085a608c15f/assets/img/logos_desktop/default@2x.png" alt="Yelp Logo" width="80"></a></p>`
 
 const priceForm =
   `<fieldset>
@@ -141,12 +143,12 @@ function displayResults() {
   $("#errorMessage").empty();
   $('form').addClass('hidden');
   $('#restaurantDetails').html(
-    `<h2>${selectedRestaurant.name}</h2>
+    `<div id="restaurantNameContainer"><h2>${selectedRestaurant.name}</h2></div>
     <address>${displayAddress}</address>
     <p>Phone: ${selectedRestaurant.display_phone}</p>
     <p>Price Level: ${selectedRestaurant.price}</p>
     <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.review_count} Yelp users</p>
-    <a target="_blank" href="${selectedRestaurant.url}">Check out the Yelp page for hours, directions, and more info</a>`
+    <a target="_blank" href="${selectedRestaurant.url}">Hours, directions, reviews and more on Yelp</a>`
   );
   $('h1').text("How about eating at");
   $('#js-results').removeClass('hidden');
