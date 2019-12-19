@@ -19,8 +19,8 @@ const startupForm =
   `<h2 class="opener">Trouble deciding where to eat?<br>Indecisive friends and family?<br>Restaurant Roulette will figure it out for you!</h2>
   <p>Let's take a gamble on your next meal...</p> 
   <button id="js-getStarted">Get Started</button>
-  <p id="attribution">Search and results powered by<br>
-  <a href="https://www.yelp.com/" target="_blank"><img src="https://s3-media3.fl.yelpcdn.com/assets/srv0/yelp_design_web/b085a608c15f/assets/img/logos_desktop/default@2x.png" alt="Yelp Logo" width="80"></a></p>`
+  <p class="instructions">Search and results powered by<br>
+  <a href="https://www.yelp.com/" target="_blank"><img id="yelpLogo" src="https://s3-media3.fl.yelpcdn.com/assets/srv0/yelp_design_web/b085a608c15f/assets/img/logos_desktop/default@2x.png" alt="Yelp Logo"></a></p>`
 
 const priceForm =
   `<fieldset>
@@ -37,47 +37,46 @@ const priceForm =
 const foodForm =
   `<fieldset>
   <legend><h2>What types of food are you interested in right now?</h2></legend>
-  <p>Hold ctrl/command key to select multiple options.</p>
+  <p class="instructions">Hold ctrl/command key to select multiple options.</p>
   <select id="foodChoice" multiple required>
     <option selected value="restaurants">Surprise Me</option>
-    <option value="hotdogs">Fast Food</option>
-    <option value="delis">Deli</option>
+    <option value="tradamerican">American (Traditional)</option>
     <option value="bbq">Barbecue</option>
     <option value="breakfast_brunch">Breakfast & Brunch</option>
-    <option value="pizza">Pizza</option>
     <option value="buffets">Buffet</option>
-    <option value="sandwiches">Sandwiches</option>
-    <option value="diners">Diner</option>
-    <option value="ethiopian">Ethiopian</option>
-    <option value="steak">Steakhouse</option>
-    <option value="french">French</option>
     <option value="burgers">Burgers</option>
-    <option value="noodles">Noodles</option>
-    <option value="chinese">Chinese</option>
     <option value="cafes">Cafe</option>
-    <option value="mexican">Mexican</option>
-    <option value="italian">Italian</option>
-    <option value="mideastern">Middle Eastern</option>
-    <option value="soulfood">Soul Food</option>
-    <option value="eastern_european">Eastern European</option>
-    <option value="sushi">Sushi</option>
-    <option value="thai">Thai</option>
     <option value="cajun">Cajun/Creole</option>
+    <option value="caribbean">Caribbean</option>
+    <option value="chinese">Chinese</option>
+    <option value="comfort_food">Comfort Food</option>
+    <option value="delis">Deli</option>
+    <option value="diners">Diner</option>
+    <option value="eastern_european">Eastern European</option>
+    <option value="ethiopian">Ethiopian</option>
+    <option value="french">French</option>
+    <option value="hotdogs">Fast Food</option>
     <option value="indpak">Indian</option>
-    <option value="seafood">Seafood</option>
+    <option value="italian">Italian</option>
     <option value="kebab">Kebabs</option>
+    <option value="korean">Korean</option>
+    <option value="mexican">Mexican</option>
+    <option value="mideastern">Middle Eastern</option>
+    <option value="noodles">Noodles</option>
+    <option value="pizza">Pizza</option>
+    <option value="pubfood">Pub Food</option>
+    <option value="salad">Salad</option>
+    <option value="sandwiches">Sandwiches</option>
+    <option value="seafood">Seafood</option>
+    <option value="soulfood">Soul Food</option>
+    <option value="soup">Soup</option>
+    <option value="steak">Steakhouse</option>
+    <option value="sushi">Sushi</option>
+    <option value="tapasmallplates">Tapas/Small Plates</option>
+    <option value="thai">Thai</option>
     <option value="vegan">Vegan</option>
     <option value="vegetarian">Vegetarian</option>
-    <option value="caribbean">Caribbean</option>
-    <option value="tradamerican">American (Traditional)</option>
-    <option value="soup">Soup</option>
-    <option value="comfort_food">Comfort Food</option>
-    <option value="pubfood">Pub Food</option>
     <option value="vietnamese">Vietnamese</option>
-    <option value="soup">Soup</option>
-    <option value="salad">Salad</option>
-    <option value="korean">Korean</option>
-    <option value="tapasmallplates">Tapas/Small Plates</option>
     <option value="wraps">Wraps</option>
   </select>
   <button type="submit" id="js-foodChoices">Submit Food Options</button>
@@ -94,7 +93,7 @@ const searchAreaForm =
 const searchLocationForm =
   `<fieldset>
     <legend><h2>Please enter your starting location</h2></legend>
-    <p>For best results, omit apartment/suite numbers</p>
+    <p class="instructions">For best results, omit apartment/suite numbers</p>
     <label for="streetAddress">Street Address:</label>
     <input type="text" name="streetAddress" id="streetAddress">
     <label for="city">City:</label>
@@ -148,7 +147,7 @@ function displayResults() {
     <p>Phone: ${selectedRestaurant.display_phone}</p>
     <p>Price Level: ${selectedRestaurant.price}</p>
     <p>Rated ${selectedRestaurant.rating} stars by ${selectedRestaurant.review_count} Yelp users</p>
-    <a target="_blank" href="${selectedRestaurant.url}">Hours, directions, reviews and more on Yelp</a>`
+    <a target="_blank" href="${selectedRestaurant.url}">Get reviews, directions, hours, and more at Yelp</a>`
   );
   $('h1').text("How about eating at");
   $('#js-results').removeClass('hidden');

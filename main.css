@@ -120,8 +120,12 @@ nav {
   max-width: 698px;
 }
 
-#attribution {
+.instructions {
   font-style: italic;
+}
+
+#yelpLogo {
+  width: 80px;
 }
 
 #js-getStarted {
@@ -170,6 +174,7 @@ input[type="number"] {
   border-color: whitesmoke;
   color: whitesmoke;
   margin-left: 10px;
+  width: 80px;
 }
 
 input[type="text"], select {
@@ -178,6 +183,10 @@ input[type="text"], select {
   background-color: transparent;
   border-color: whitesmoke;
   color: whitesmoke;
+}
+
+select {
+  max-width: 350px;
 }
 
 ul {
@@ -240,6 +249,10 @@ form p {
   ul {
     max-width: 250px;
   }
+
+  #yelpLogo {
+    width: 100px;
+  }
 }
 
 @media screen and (min-width: 1000px) {
@@ -277,4 +290,7 @@ form p {
     transform: scale(1.5);
   }
 
+  #yelpLogo {
+    width: 115px;
+  }
 }
