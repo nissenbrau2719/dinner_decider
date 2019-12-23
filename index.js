@@ -136,11 +136,13 @@ function resetRestaurantParams() {
   totalResults = 0;
 }
 
+//choose a random restaurant from user's search results, display results screen
 function displayResults() {
   selectedRestaurant = restaurantList[Math.floor(Math.random() * restaurantList.length)];
   displayAddress = selectedRestaurant.location.display_address.join("<br>");
   $("#errorMessage").empty();
   $('form').addClass('hidden');
+  $('#js-reroll').removeClass('hidden');
   $('#restaurantDetails').html(
     `<div id="restaurantNameContainer"><h2>${selectedRestaurant.name}</h2></div>
     <address>${displayAddress}</address>
@@ -153,6 +155,7 @@ function displayResults() {
   $('#js-results').removeClass('hidden');
 }
 
+//display screen for zero search results with user's chosen parameters
 function displayNoResults() {
   $("#errorMessage").empty();
   $('form').addClass('hidden');
@@ -161,6 +164,7 @@ function displayNoResults() {
   $('#js-results').removeClass('hidden');
 }
 
+//repeat calls to Yelp Fusion API to complete results list if there are more than 50 resulting restaurants, display results when complete
 function findMoreRestaurants() {
   let options = {
     headers: new Headers({
@@ -191,6 +195,7 @@ function findMoreRestaurants() {
     .catch(error => $('#errorMessage').text(`Something went wrong: ${error.message}`));
 }
 
+//call Yelp Fusion API and get list of restaurants according to user's search area, price options, and food types preferences. Display results screen or make more calls to complete list of results
 function findRestaurants() {
   let options = {
     headers: new Headers({
@@ -222,6 +227,7 @@ function findRestaurants() {
     .catch(error => $('#errorMessage').text(`Something went wrong: ${error.message}`));
 }
 
+//save the user's desired food options to a variable, call the next function to get restaurant options from Yelp Fusion API
 function getFoodTypes() {
   selectedFoodTypes = "";
   $("form").on("click", "#js-foodChoices", event => {
@@ -237,6 +243,7 @@ function getFoodTypes() {
   });
 }
 
+//get user's acceptable price options, display next screen and call next function on submit
 function getPriceRange() {
   howExpensive = [];
   $("form").on("click", "#js-setPrices", event => {
@@ -256,6 +263,7 @@ function getPriceRange() {
   })
 }
 
+//get user input for a desired search radius within Yelp parameters, convert to an integer in meters, and save to variable to reference later. Display next screen and call next function on submit
 function getSearchRadius() {
   searchRadius = "";
   $('form').on('click', '#js-submitDistance', event => {
@@ -264,7 +272,7 @@ function getSearchRadius() {
     if ($('#distance').val() < 0.5 || $('#distance').val() > 20) {
       $("#errorMessage").text("Please keep your search radius between 0.5 mi and 20 mi");
     } else {
-      searchRadius = Math.floor($('#distance').val() * 1609.344); //search radius parameter must be an integer in meters
+      searchRadius = Math.floor($('#distance').val() * 1609.344); //conversion to meters and round to integer
       $("form").html(priceForm);
       $("#errorMessage").empty();
       getPriceRange();
@@ -272,6 +280,7 @@ function getSearchRadius() {
   })
 }
 
+//call OpenCageData geocoding api with starting location and resulting coordinates to variables to use later, display next screen and call next function on submit
 function getGeoLocation() {
   fetch(`https://api.opencagedata.com/geocode/v1/json?q=${searchLocation}&key=${openCageDataKey}`)
     .then(response => {
@@ -290,7 +299,8 @@ function getGeoLocation() {
     .catch(error => $("#errorMessage").text(`Something went wrong: ${error.message}`));
 }
 
-function getSearchParams() {
+//get the user's starting location and convert to syntax needed for OpenCageData Geocoding API query parameter, display next screen and call next function on submit
+function getStartingLocation() {
   $('form').on('click', '#js-submitLocation', function (event) {
     event.stopPropagation();
     event.preventDefault();
@@ -310,15 +320,17 @@ function getSearchParams() {
   });
 }
 
+//set event handler for landing page form, display next screen and call next function
 function watchForm() {
   $('form').on('click', '#js-getStarted', event => {
     event.stopPropagation();
     event.preventDefault();
     $('form').html(searchLocationForm);
-    getSearchParams();
+    getStartingLocation();
   });
 }
 
+//reset variables and restart app, return to original display settings
 function startApp() {
   resetAll();
   $('#js-results').addClass('hidden');
@@ -329,7 +341,8 @@ function startApp() {
   watchForm();
 }
 
-function initialize() {
+//setup event handlers for restart/get a different restaurant/search area again buttons
+function initializeButtonHandlers() {
   $('#home').click(event => {
     event.preventDefault();
     event.stopPropagation();
@@ -356,4 +369,4 @@ function initialize() {
   startApp();
 }
 
-$(initialize);
+$(initializeButtonHandlers);

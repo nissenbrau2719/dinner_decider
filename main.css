@@ -98,13 +98,21 @@ nav {
   position: fixed;
   top: 0;
   left: 0;
-  padding-top: 10px;
 }
 
 .navContainer {
   max-width: 1440px;
   margin: 0 auto;
   padding: 10px;
+}
+
+#home {
+  outline: none;
+  background-color: transparent;
+  border: none;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
 }
 
 #errorContainer {
@@ -216,6 +224,8 @@ form p {
 @media screen and (min-width: 768px) {
   h1 {
     font-size: 3.5em;
+    padding-left: 35px;
+    padding-right: 35px;
   }
 
   h2 {
@@ -230,7 +240,7 @@ form p {
     transform: scale(1.25);
   }
 
-  .home {
+  #home {
     font-size: 2em;
   }
 
@@ -276,10 +286,6 @@ form p {
 
   h2 {
     font-size: 2.75em;
-  }
-
-  .home {
-    font-size: 3em;
   }
 
   p, button, input, label, select, address, a {
