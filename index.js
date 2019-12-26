@@ -357,10 +357,7 @@ function watchReRollButton() {
   });
 }
 
-//setup event handlers for restart/get a different restaurant/search area again buttons
-function initializeButtonHandlers() {
-  watchHomeButton();
-  watchReRollButton();
+function watchChangeRestaurantPrefsBtn() {
   $('#js-newFoodParams').click(event => {
     event.preventDefault();
     event.stopPropagation();
@@ -369,11 +366,22 @@ function initializeButtonHandlers() {
     $('form').removeClass('hidden');
     getPriceRange();
   });
-  $('#js-startOver').click(event => {
+}
+
+function watchStartNewSearchBtn() {
+   $('#js-startOver').click(event => {
     event.preventDefault();
     event.stopPropagation();
     startApp();
   });
+}
+
+//setup event handlers for restart/get a different restaurant/search area again buttons
+function initializeButtonHandlers() {
+  watchHomeButton();
+  watchReRollButton();
+  watchChangeRestaurantPrefsBtn();
+  watchStartNewSearchBtn();
   startApp();
 }
 
