@@ -341,13 +341,17 @@ function startApp() {
   watchForm();
 }
 
-//setup event handlers for restart/get a different restaurant/search area again buttons
-function initializeButtonHandlers() {
-  $('#home').click(event => {
+function watchHomeButton() {
+   $('#home').click(event => {
     event.preventDefault();
     event.stopPropagation();
     startApp();
   });
+}
+
+//setup event handlers for restart/get a different restaurant/search area again buttons
+function initializeButtonHandlers() {
+  watchHomeButton();
   $('#js-reroll').click(event => {
     event.preventDefault();
     event.stopPropagation();
