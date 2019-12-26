@@ -349,14 +349,18 @@ function watchHomeButton() {
   });
 }
 
-//setup event handlers for restart/get a different restaurant/search area again buttons
-function initializeButtonHandlers() {
-  watchHomeButton();
+function watchReRollButton() {
   $('#js-reroll').click(event => {
     event.preventDefault();
     event.stopPropagation();
     displayResults();
   });
+}
+
+//setup event handlers for restart/get a different restaurant/search area again buttons
+function initializeButtonHandlers() {
+  watchHomeButton();
+  watchReRollButton();
   $('#js-newFoodParams').click(event => {
     event.preventDefault();
     event.stopPropagation();
