@@ -321,7 +321,7 @@ function getStartingLocation() {
 }
 
 //set event handler for landing page form, display next screen and call next function
-function watchForm() {
+function watchStartupForm() {
   $('form').on('click', '#js-getStarted', event => {
     event.stopPropagation();
     event.preventDefault();
@@ -338,7 +338,7 @@ function startApp() {
   $('form').html(startupForm);
   $('form').removeClass('hidden');
   $('#restaurantDetails').empty();
-  watchForm();
+  // watchStartupForm();
 }
 
 function watchHomeButton() {
@@ -382,6 +382,7 @@ function initializeButtonHandlers() {
   watchReRollButton();
   watchChangeRestaurantPrefsBtn();
   watchStartNewSearchBtn();
+  watchStartupForm();
   startApp();
 }
 
