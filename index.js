@@ -4,7 +4,6 @@ let priceStr,
   searchRadius,
   restaurantList,
   selectedRestaurant,
-  map,
   myLat,
   myLng,
   displayAddress,
@@ -103,6 +102,7 @@ const yelpKey = config.yfapi,
     <button id="js-submitLocation">Submit Location</button>
   </fieldset>`;
 
+// hide results screen
 function removeResults() {
   $('h1').text('Restaurant Roulette');
   $('#js-results').addClass('hidden');
@@ -111,23 +111,16 @@ function removeResults() {
 }
 
 function resetAll() {
-  removeResults();
-  $("form").off();
-  priceStr = "";
-  selectedFoodTypes = "";
+  resetRestaurantParams();
   searchLocation = "";
   searchRadius = "";
-  restaurantList = [];
-  selectedRestaurant = {};
   myLat = "";
   myLng = "";
-  resultsOffset = 51;
-  totalResults = 0;
 }
 
 function resetRestaurantParams() {
   removeResults();
-  $("form").off();
+  howExpensive = [];
   priceStr = "";
   selectedFoodTypes = "";
   restaurantList = [];
@@ -136,10 +129,10 @@ function resetRestaurantParams() {
   totalResults = 0;
 }
 
-//choose a random restaurant from user's search results, display results screen
+//choose a random restaurant from user's search results, populate results screen with selected restaurant's info, hide form and display results screen
 function displayResults() {
-  selectedRestaurant = restaurantList[Math.floor(Math.random() * restaurantList.length)];
-  displayAddress = selectedRestaurant.location.display_address.join("<br>");
+  getRandomRestaurantFromList();
+  formatSelectedRestaurantAddress();
   $("#errorMessage").empty();
   $('form').addClass('hidden');
   $('#js-reroll').removeClass('hidden');
@@ -153,6 +146,14 @@ function displayResults() {
   );
   $('h1').text("How about eating at");
   $('#js-results').removeClass('hidden');
+}
+
+function getRandomRestaurantFromList() {
+  selectedRestaurant = restaurantList[Math.floor(Math.random() * restaurantList.length)];
+}
+
+function formatSelectedRestaurantAddress() {
+  displayAddress = selectedRestaurant.location.display_address.join("<br>");
 }
 
 //display screen for zero search results with user's chosen parameters
@@ -195,7 +196,7 @@ function findMoreRestaurants() {
     .catch(error => $('#errorMessage').text(`Something went wrong: ${error.message}`));
 }
 
-//call Yelp Fusion API and get list of restaurants according to user's search area, price options, and food types preferences. Display results screen or make more calls to complete list of results
+//call Yelp Fusion API and get list of restaurants according to user's search area, price options, and food types preferences. Display results screen if results < 50 or make more calls to complete list of results
 function findRestaurants() {
   let options = {
     headers: new Headers({
@@ -203,7 +204,7 @@ function findRestaurants() {
     })
   }
   let url = `https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?price=${priceStr}&limit=50&latitude=${myLat}&longitude=${myLng}&open_now=true&radius=${searchRadius}&categories=${selectedFoodTypes}`;
-  console.log(`finding ${selectedFoodTypes} with price options (${priceStr}) within ${searchRadius} m of ${myLat}, ${myLng}`);
+  console.log(`Finding ${selectedFoodTypes} with price options (${priceStr}) within ${searchRadius} m of ${myLat}, ${myLng}`);
   fetch(url, options)
     .then(response => {
       if (response.ok) {
@@ -213,7 +214,7 @@ function findRestaurants() {
       }
     })
     .then(responseJson => {
-      console.log(`Found ${responseJson.total} restaurants with these search parameters`);
+      console.log(`Found ${responseJson.total} restaurants with these search parameters that are open now`);
       totalResults = responseJson.total;
       restaurantList = responseJson.businesses;
       if (responseJson.total === 0) {
@@ -228,24 +229,25 @@ function findRestaurants() {
 }
 
 //save the user's desired food options to a variable, call the next function to get restaurant options from Yelp Fusion API
-function getFoodTypes() {
-  selectedFoodTypes = "";
+function watchFoodChoicesBtn() {
   $(document).on("click", "#js-foodChoices", event => {
     event.stopPropagation();
     event.preventDefault();
-    selectedFoodTypes = $('#foodChoice').val();
-    if (selectedFoodTypes.length > 10) {
-      $("#errorMessage").text("Please limit your options to 10 or fewer types of food");
+    let foodChoicesArray = $('#foodChoice').val();
+    if(foodChoicesArray.length === 0) {
+      $("#errorMessage").text("Please select at least one food option");
+    } else if(foodChoicesArray.length > 10) {
+      $("#errorMessage").text("Please limit your options to 10 or fewer types");
     } else {
       $("#errorMessage").empty();
+      selectedFoodTypes = foodChoicesArray.toString();
       findRestaurants();
     }
   });
 }
 
-//get user's acceptable price options, display next screen and call next function on submit
-function getPriceRange() {
-  howExpensive = [];
+//get user's acceptable price options on submit, display next screen if successful
+function watchSetPricesBtn() {
   $(document).on("click", "#js-setPrices", event => {
     event.stopPropagation();
     event.preventDefault();
@@ -255,32 +257,34 @@ function getPriceRange() {
     if (howExpensive.length === 0) {
       $("#errorMessage").text('Please select one or more price options');
     } else {
-      priceStr = howExpensive.join(",");
+      priceStr = howExpensive.toString();
       $("#errorMessage").empty();
       $("form").html(foodForm);
-      getFoodTypes();
     }
   })
 }
 
-//get user input for a desired search radius within Yelp parameters, convert to an integer in meters, and save to variable to reference later. Display next screen and call next function on submit
-function getSearchRadius() {
-  searchRadius = "";
+//get user input for a desired search radius within Yelp parameters and save to variable to reference later. Display next screen if successful
+function watchSubmitDistanceButton() {
   $(document).on('click', '#js-submitDistance', event => {
     event.stopPropagation();
     event.preventDefault();
     if ($('#distance').val() < 0.5 || $('#distance').val() > 20) {
       $("#errorMessage").text("Please keep your search radius between 0.5 mi and 20 mi");
     } else {
-      searchRadius = Math.floor($('#distance').val() * 1609.344); //conversion to meters and round to integer
+      searchRadiusToMeters();
       $("form").html(priceForm);
       $("#errorMessage").empty();
-      getPriceRange();
     }
   })
 }
 
-//call OpenCageData geocoding api with starting location and resulting coordinates to variables to use later, display next screen and call next function on submit
+// convert searchRadius to meters and round to integer to comply with Yelp Fusion radius parameters
+function searchRadiusToMeters() {
+  searchRadius = Math.round($('#distance').val() * 1609.344);
+}
+
+//call OpenCageData geocoding api with starting location and save resulting coordinates to variables to use later, display next screen if successful
 function getGeoLocation() {
   fetch(`https://api.opencagedata.com/geocode/v1/json?q=${searchLocation}&key=${openCageDataKey}`)
     .then(response => {
@@ -294,32 +298,25 @@ function getGeoLocation() {
       myLng = responseJson.results[0].geometry.lng;
       $("#errorMessage").empty();
       $("form").html(searchAreaForm);
-      getSearchRadius();
     })
     .catch(error => $("#errorMessage").text(`Something went wrong: ${error.message}`));
 }
 
-//get the user's starting location and convert to syntax needed for OpenCageData Geocoding API query parameter, display next screen and call next function on submit
-function getStartingLocation() {
+// get the user's starting location and call getGeoLocation if entered properly
+function watchSubmitLocationBtn() {
   $(document).on('click', '#js-submitLocation', function (event) {
     event.stopPropagation();
     event.preventDefault();
     if ($('#city').val() === "" || $('#state').val() === "") {
-      $("#errorMessage").text("Must enter a valid address, a city and state at minimum");
+      $("#errorMessage").text("Must enter a valid address, enter city and state at minimum");
     } else {
-      let locationArr = [];
-      if ($('#streetAddress').val() !== "") {
-        locationArr.push($('#streetAddress').val());
-      }
-      locationArr.push($('#city').val());
-      locationArr.push($('#state').val());
-      searchLocation = encodeURI(locationArr.join(", "));
-      $("#errorMessage").empty();
+      makeLocationQueryString();
       getGeoLocation();
     }
   });
 }
 
+// format user's starting location into proper syntax for OpenCageData parmeter
 function makeLocationQueryString() {
   let locationArr = [];
       if ($('#streetAddress').val() !== "") {
@@ -331,12 +328,11 @@ function makeLocationQueryString() {
 }
 
 // event handler for submission of landing page form, display next screen and call next function
-function watchStartupForm() {
+function watchGetStartedBtn() {
   $(document).on('click', '#js-getStarted', event => {
     event.preventDefault();
     event.stopPropagation();
     $('form').html(startLocationForm);
-    getStartingLocation();
   });
 }
 
@@ -348,7 +344,6 @@ function startApp() {
   $('form').html(startupForm);
   $('form').removeClass('hidden');
   $('#restaurantDetails').empty();
-  // watchStartupForm();
 }
 
 // event listener for restart/home button on nav bar
@@ -377,7 +372,6 @@ function watchChangeRestaurantPrefsBtn() {
     resetRestaurantParams();
     $('form').html(priceForm);
     $('form').removeClass('hidden');
-    getPriceRange();
   });
 }
 
@@ -396,7 +390,11 @@ function initializeApp() {
   watchReRollButton();
   watchChangeRestaurantPrefsBtn();
   watchStartNewSearchBtn();
-  watchStartupForm();
+  watchGetStartedBtn();
+  watchSubmitLocationBtn();
+  watchSubmitDistanceButton();
+  watchSetPricesBtn();
+  watchFoodChoicesBtn();
   startApp();
 }
 
