@@ -320,11 +320,11 @@ function getStartingLocation() {
   });
 }
 
-//set event handler for landing page form, display next screen and call next function
+// event handler for submission of landing page form, display next screen and call next function
 function watchStartupForm() {
   $('form').on('click', '#js-getStarted', event => {
-    event.stopPropagation();
     event.preventDefault();
+    event.stopPropagation();
     $('form').html(searchLocationForm);
     getStartingLocation();
   });
@@ -341,6 +341,7 @@ function startApp() {
   // watchStartupForm();
 }
 
+// event handler for restart/home button on nav bar
 function watchHomeButton() {
    $('#home').click(event => {
     event.preventDefault();
@@ -349,6 +350,7 @@ function watchHomeButton() {
   });
 }
 
+// event handler for 'get another restaurant' button on results screen
 function watchReRollButton() {
   $('#js-reroll').click(event => {
     event.preventDefault();
@@ -357,6 +359,7 @@ function watchReRollButton() {
   });
 }
 
+// event handler for 'change restaurant preferences' button on results screen
 function watchChangeRestaurantPrefsBtn() {
   $('#js-newFoodParams').click(event => {
     event.preventDefault();
@@ -368,6 +371,7 @@ function watchChangeRestaurantPrefsBtn() {
   });
 }
 
+// event handler for 'start new search' button on results screen
 function watchStartNewSearchBtn() {
    $('#js-startOver').click(event => {
     event.preventDefault();
@@ -376,7 +380,7 @@ function watchStartNewSearchBtn() {
   });
 }
 
-//setup event handlers for restart/get a different restaurant/search area again buttons
+// run event handlers for app
 function initializeButtonHandlers() {
   watchHomeButton();
   watchReRollButton();
