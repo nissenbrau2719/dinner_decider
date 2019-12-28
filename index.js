@@ -31,7 +31,7 @@ const yelpKey = config.yfapi,
     <li><input type="checkbox" name="priceRange" id="expensive" value="3"><label for="expensive">Expensive</label></li>
     <li><input type="checkbox" name="priceRange" id="very_expensive" value="4"><label for="very_expensive">Very Expensive</label></li>
   </ul>
-  <button type="submit" id="js-setPrices">Set Price Options</button>
+  <button id="js-setPrices">Set Price Options</button>
   </fieldset>`;
 
   const foodForm =
@@ -79,7 +79,7 @@ const yelpKey = config.yfapi,
     <option value="vietnamese">Vietnamese</option>
     <option value="wraps">Wraps</option>
   </select>
-  <button type="submit" id="js-foodChoices">Submit Food Options</button>
+  <button id="js-foodChoices">Submit Food Options</button>
 </fieldset>`;
 
   const searchAreaForm =
@@ -87,10 +87,10 @@ const yelpKey = config.yfapi,
     <legend><h2>How far are you willing to travel?</h2></legend>
     <label for="distance">Enter distance in mi:</label>
     <input type="number" name="distance" id="distance" value="3" min="0.5" max="20" step="0.5" required>   
-    <button type="submit" id="js-submitDistance">Submit Distance</button>
+    <button id="js-submitDistance">Submit Distance</button>
   </fieldset>`;
 
-  const searchLocationForm =
+  const startLocationForm =
   `<fieldset>
     <legend><h2>Please enter your starting location</h2></legend>
     <p class="instructions">For best results, omit apartment/suite numbers</p>
@@ -100,7 +100,7 @@ const yelpKey = config.yfapi,
     <input type="text" name="city" id="city" required>
     <label for="state">State:</label>
     <input type="text" name="state" id="state" required>
-    <button type="submit" id="js-submitLocation">Submit Location</button>
+    <button id="js-submitLocation">Submit Location</button>
   </fieldset>`;
 
 function removeResults() {
@@ -230,7 +230,7 @@ function findRestaurants() {
 //save the user's desired food options to a variable, call the next function to get restaurant options from Yelp Fusion API
 function getFoodTypes() {
   selectedFoodTypes = "";
-  $("form").on("click", "#js-foodChoices", event => {
+  $(document).on("click", "#js-foodChoices", event => {
     event.stopPropagation();
     event.preventDefault();
     selectedFoodTypes = $('#foodChoice').val();
@@ -246,7 +246,7 @@ function getFoodTypes() {
 //get user's acceptable price options, display next screen and call next function on submit
 function getPriceRange() {
   howExpensive = [];
-  $("form").on("click", "#js-setPrices", event => {
+  $(document).on("click", "#js-setPrices", event => {
     event.stopPropagation();
     event.preventDefault();
     $('input[name=priceRange]:checked').map(function () {
@@ -266,7 +266,7 @@ function getPriceRange() {
 //get user input for a desired search radius within Yelp parameters, convert to an integer in meters, and save to variable to reference later. Display next screen and call next function on submit
 function getSearchRadius() {
   searchRadius = "";
-  $('form').on('click', '#js-submitDistance', event => {
+  $(document).on('click', '#js-submitDistance', event => {
     event.stopPropagation();
     event.preventDefault();
     if ($('#distance').val() < 0.5 || $('#distance').val() > 20) {
@@ -301,7 +301,7 @@ function getGeoLocation() {
 
 //get the user's starting location and convert to syntax needed for OpenCageData Geocoding API query parameter, display next screen and call next function on submit
 function getStartingLocation() {
-  $('form').on('click', '#js-submitLocation', function (event) {
+  $(document).on('click', '#js-submitLocation', function (event) {
     event.stopPropagation();
     event.preventDefault();
     if ($('#city').val() === "" || $('#state').val() === "") {
@@ -320,12 +320,22 @@ function getStartingLocation() {
   });
 }
 
+function makeLocationQueryString() {
+  let locationArr = [];
+      if ($('#streetAddress').val() !== "") {
+        locationArr.push($('#streetAddress').val());
+      }
+      locationArr.push($('#city').val());
+      locationArr.push($('#state').val());
+      searchLocation = encodeURI(locationArr.join(", "));
+}
+
 // event handler for submission of landing page form, display next screen and call next function
 function watchStartupForm() {
-  $('form').on('click', '#js-getStarted', event => {
+  $(document).on('click', '#js-getStarted', event => {
     event.preventDefault();
     event.stopPropagation();
-    $('form').html(searchLocationForm);
+    $('form').html(startLocationForm);
     getStartingLocation();
   });
 }
@@ -341,7 +351,7 @@ function startApp() {
   // watchStartupForm();
 }
 
-// event handler for restart/home button on nav bar
+// event listener for restart/home button on nav bar
 function watchHomeButton() {
    $('#home').click(event => {
     event.preventDefault();
@@ -350,7 +360,7 @@ function watchHomeButton() {
   });
 }
 
-// event handler for 'get another restaurant' button on results screen
+// event listener for 'get another restaurant' button on results screen
 function watchReRollButton() {
   $('#js-reroll').click(event => {
     event.preventDefault();
@@ -359,7 +369,7 @@ function watchReRollButton() {
   });
 }
 
-// event handler for 'change restaurant preferences' button on results screen
+// event listener for 'change restaurant preferences' button on results screen
 function watchChangeRestaurantPrefsBtn() {
   $('#js-newFoodParams').click(event => {
     event.preventDefault();
@@ -380,8 +390,8 @@ function watchStartNewSearchBtn() {
   });
 }
 
-// run event handlers for app
-function initializeButtonHandlers() {
+// call all event listeners and render landing screen
+function initializeApp() {
   watchHomeButton();
   watchReRollButton();
   watchChangeRestaurantPrefsBtn();
@@ -390,4 +400,4 @@ function initializeButtonHandlers() {
   startApp();
 }
 
-$(initializeButtonHandlers);
+$(initializeApp);
